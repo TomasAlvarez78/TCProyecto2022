@@ -1,0 +1,71 @@
+* Análisis léxico
+
+Verifica que las palabras usadas pertenezcan al lenguaje.
+(Verifica ortografía)
+
+Lo vamos a implementar utilizando expresiones regulares.
+Las expresiones regulares tienen implementacion ITERATIVA.
+
+* Análisis sintáctico
+
+Verifica que la secuencia de tokens sea correcta.
+Estructura gramatical del lenguajes.
+
+Lo vamos a implementar utilizando reglas gramaticales.
+La reglas sintacticas tienen implementación RECURSIVA.
+
+Se puede realizar en forma:
+ - Descendente : Top-Down parsing -> de la raíz a las hojas
+ - Ascendente  : Bottom-Up parsing -> de las hojas a la raíz
+
+* AS Descendente
+
+entrada: (())()
+
+Regla: s : ( s ) s
+         |
+         ;
+
+$ s           ( ( ) ) ( ) $  derivar
+$ s ) s (     ( ( ) ) ( ) $  match
+$ s ) s         ( ) ) ( ) $  derivar
+$ s ) s ) s (   ( ) ) ( ) $  match
+$ s ) s ) s       ) ) ( ) $  derivar
+$ s ) s )         ) ) ( ) $  match
+$ s ) s             ) ( ) $  derivar
+$ s )               ) ( ) $  match
+$ s                   ( ) $  derivar
+$ s ) s (             ( ) $  match
+$ s ) s                 ) $  derivar
+$ s )                   ) $  match
+$ s                       $  derivar
+$                         $  OK
+
+entrada: (()
+
+Regla: s : ( s ) s
+         |
+         ;
+
+$ s              ( ( ) $  derivar
+$ s ) s (        ( ( ) $  match
+$ s ) s            ( ) $  derivar
+$ s ) s ) s (      ( ) $  match
+$ s ) s ) s          ) $  derivar
+$ s ) s )            ) $  match
+$ s ) s                $  derivar
+$ s )                  $  ERROR
+
+entrada: ())
+
+Regla: s : ( s ) s
+         |
+         ;
+
+$ s              ( ) ) $  derivar
+$ s ) s (        ( ) ) $  match
+$ s ) s            ) ) $  derivar
+$ s )              ) ) $  match
+$ s                  ) $  derivar
+$                    ) $  ERROR
+

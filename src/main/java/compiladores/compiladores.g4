@@ -4,16 +4,43 @@ grammar compiladores;
 package compiladores;
 }
 
-fragment LETRA : [A-Za-z] ;
-fragment DIGITO : [0-9] ;
+// Dada la regla sintáctica
 
-NUMERO : DIGITO+ ;
+fragment NUMERO_F : [0-9];
+NUMERO: NUMERO_F;
+
+term : term exp
+     | NUMERO
+     ;
+
+exp : '+' term
+    | '-' term
+    |
+    ;
+
+// exp : '+' term
+//     | '-' term
+//     |
+//     ;
+
+// Realice los siguientes ejercicios.
+// Realizar la tabla de Análisis Sintáctico Descendente para la entrada
+// 7 - 2 + 9
+
+WS : [ \t\n\r] -> skip;
 OTRO : . ;
 
-ID : (LETRA | '_')(LETRA | DIGITO | '_')+ ;
+si : s EOF ;
 
-s : ID     { System.out.println("ID ->" + $ID.getText() + "<--"); }         s
-  | NUMERO { System.out.println("NUMERO ->" + $NUMERO.getText() + "<--"); } s
-  | OTRO   { System.out.println("Otro ->" + $OTRO.getText() + "<--"); }     s
-  | EOF
+s : term s
+  |
   ;
+
+// $ s                        7 - 2 + 9 $ derivar
+// $ s term                   7 - 2 + 9 $ match
+// $ s                        2 + 9     $ derivar
+// $ s term                   2 + 9     $ match
+// $ s                        9         $ derivar
+// $ s term                   9         $ match
+// $ s                                  $ derivar
+// $                                    $ OK
