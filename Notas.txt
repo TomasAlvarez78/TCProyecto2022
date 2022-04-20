@@ -3,6 +3,8 @@
 Verifica que las palabras usadas pertenezcan al lenguaje.
 (Verifica ortografía)
 
+Si las palabras no son del lenguaje ==> error lexico
+
 Lo vamos a implementar utilizando expresiones regulares.
 Las expresiones regulares tienen implementacion ITERATIVA.
 

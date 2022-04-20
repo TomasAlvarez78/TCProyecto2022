@@ -13,7 +13,7 @@ public class App {
         // CharStream input = CharStreams.fromFileName("input/entrada.txt");
         // CharStream input = CharStreams.fromFileName("input/FechasHoras.txt");
         // CharStream input = CharStreams.fromFileName("input/parentesis.txt");
-        CharStream input = CharStreams.fromFileName("input/numero.txt");
+        CharStream input = CharStreams.fromFileName("input/codigo.txt");
 
 
 
@@ -34,7 +34,7 @@ public class App {
 
         // Solicito al parser que comience indicando una regla gramatical
         // En este caso la regla es el simbolo inicial
-        parser.si();
+        parser.programa();
         
         // El parse devuelve un arbol sintactico
         // ParseTree tree =  parser.s();

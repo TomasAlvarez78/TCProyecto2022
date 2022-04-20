@@ -79,8 +79,10 @@ fragment MES : '/'('0'[1-9] | '1'[0-2]) ;
 // Agarra todas las posiblidades de anio (entre 1000 a 2999)
 fragment ANO : '/'([1-2])([0-9])([0-9])([0-9]);
 
-fragment MIN1 : ':'(([3-5][0-9]));
-fragment MIN2 : ':'(([3-5][0-9]));
+
+// NO HACE FALTA
+// fragment MIN1 : ':'(([3-5][0-9]));
+// fragment MIN2 : ':'(([3-5][0-9]));
 
 fragment HORA1 : ( ('1'[8]) )':'(([3-5][0-9]));
 fragment HORA2 : ( ('1'[9]) )':'(([0-5][0-9])) | ( ('2'[0]) )':'(([0-5][0-9]));
@@ -90,14 +92,18 @@ HORA_1 : HORA1 ;
 HORA_2 : HORA2 ;
 HORA_3 : HORA3 ;
 
+//Se puede poner sin parentesis
 FECHA : (DIA)(MES)(ANO);
 
 ID: (FECHA)([ \t\r\n]+)(HORA_1) | (FECHA)([ \t\r\n]+)(HORA_2) | (FECHA)([ \t\r\n]+)(HORA_3);
 
 OTRO: . ;
 
+// Si FECHA y OTRO no hacen nada, no hacen falta ponerlos.
 s : ID   { System.out.println("ID ->" + $ID.getText() + "<--"); }     s
  | FECHA   { ; }     s
  | OTRO  { ; }   s
  | EOF
  ;
+
+// Si FECHA, OTRO no hacen nada, no hace falta ponerlas

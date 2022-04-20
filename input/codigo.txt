@@ -1,0 +1,7 @@
+int x;
+double y;
+int z = 0;
+double w = 10.12;
+int z = 3, o = 6;
+x = 1;
+x = y;
