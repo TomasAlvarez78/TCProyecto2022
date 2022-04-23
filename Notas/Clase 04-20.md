@@ -26,27 +26,9 @@ PC : ')';
 LA : '{';
 LC : '}';
 PyC: ';';
+ESP: ' ';
 IGU: '=';
 COM: ',';
-
-// Comparadores
-EQ: '==';
-GT: '>';
-GE: '>=';
-LT: '<';
-LE: '<=';
-NEQ: '!=';
-
-// Expresiones logicas
-AND: '&&';
-OR: '||';
-
-// Aritmetica
-SUMA: '+';
-RESTA: '-';
-MULT: '*'; 
-DIV: '/'; 
-MOD: '%'; 
 
 // Variables
 INT : 'int' ;
@@ -56,7 +38,7 @@ DOUBLE: 'double';
 IWHILE: 'while';
 
 // Nombre de variables
-VAR: [a-zA-Z] ;
+LETRAS: [a-zA-Z] ;
 
 WS : [ \t\n\r] -> skip;
 
@@ -70,66 +52,45 @@ instrucciones : instruccion instrucciones
               |
               ;
 
-instruccion : declaracion PyC
+instruccion : declaracion
+            | 
+            ;
+
+declaracion : (INT | DOUBLE) ESP declaracion2 PyC
             | asignacion PyC
-            | bucleWhile 
             ;
 
-declaracion: INT VAR concatenacion 
-            | DOUBLE VAR concatenacion 
-            | INT asignacion concatenacion 
-            | DOUBLE asignacion concatenacion 
-            ;
+declaracion2: LETRAS declaracion3
+            | LETRAS ESP IGU ESP (ENTERO | DOBLE) declaracion3;
 
-concatenacion: COM VAR concatenacion 
-              | COM asignacion
-              |
-              ;
+declaracion3: COM ESP declaracion2
+            | ;
 
-asignacion: VAR IGU VAR
-            | VAR IGU ENTERO
-            | VAR IGU DOBLE
-            ;
+asignacion: LETRAS ESP IGU ESP (LETRAS | ENTERO | DOBLE);
 
 bloque: LA instrucciones LC;
 
-bucleWhile: IWHILE PA cond PC bloque;
-
-cond: e comparadores e 
-    | cond AND cond
-    | cond OR cond
-    ;
-
-
-comparadores : GT
-             | GE
-             | LT
-             | LE
-             | EQ
-             | NEQ
-             ;
+inst_simple: . ;
 
 e: term exp;
 
-exp: SUMA e
-    | RESTA e
+exp: SUMA term exp
+    | RESTA term exp
     |
     ;
 
 term: factor t;
 
-t: MULT term
- | DIV term
- | MOD term
+t: MULT factor t
+ | DIV factor t
+ | MOD factor t
  |
  ;
 
-factor: ENTERO
-      | DOBLE
-      | VAR
+factor: NUMERO
       | PA e PC
       ;
 
-
+4 + 5 - 3 * 4 
 
 
