@@ -120,6 +120,8 @@ condicional_if: IIF PA cond PC bloque;
 bucle_for: IFOR PA (declaracion PyC cond PyC post_pre_incremento ) PC bloque;
 
 // Declaracion Funcion
+// e 34:4 mismatched input 'return' expecting {'int', 'double', 'while', 'if', 'for', VAR}
+// ne 35:0 mismatched input '}' expecting {'int', 'double', 'while', 'if', 'for', 'return', VAR}
 // int nombre (int,float,bool);
 
 declaracion_funcion: tipo_var VAR PA declaracion_argumentos PC PyC;
@@ -133,7 +135,7 @@ concatenacion_argumentos_declaracion: COM declaracion_argumentos
 // Asignacion funcion
 // int nombre (int i,float x,bool z){   bloque   }
 
-asignacion_funcion: tipo_var VAR PA asignacion_argumentos PC (LA bloque_funcion LC);
+asignacion_funcion: tipo_var VAR PA asignacion_argumentos PC bloque_funcion;
 
 asignacion_argumentos: INT VAR concatenacion_argumentos_asignacion 
                                  | DOUBLE VAR concatenacion_argumentos_asignacion 
@@ -145,22 +147,23 @@ concatenacion_argumentos_asignacion: COM asignacion_argumentos
               |
               ;
 
-bloque_funcion: instrucciones_funcion
-          | return_tipo
-          ;
+bloque_funcion: LA instrucciones_funcion LC;
 
-instrucciones_funcion: instruccion_funcion instrucciones_funcion;
+instrucciones_funcion: instruccion_funcion instrucciones_funcion
+                     |
+                     ;
 
 instruccion_funcion : declaracion PyC
             | asignacion PyC
             | bucle_while 
             | condicional_if
             | bucle_for
+            | return_tipo PyC
             ;
 
-return_tipo: IRETURN VAR PyC
-           | IRETURN factor PyC
-           | IRETURN PyC
+return_tipo: IRETURN VAR
+           | IRETURN factor
+           | IRETURN
            ;
 
 tipo_var: INT

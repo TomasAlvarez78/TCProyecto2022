@@ -15,8 +15,6 @@ public class App {
         // CharStream input = CharStreams.fromFileName("input/parentesis.txt");
         CharStream input = CharStreams.fromFileName("input/codigo.txt");
 
-
-
         // create a lexer that feeds off of input CharStream
         compiladoresLexer lexer = new compiladoresLexer(input);
         
@@ -26,10 +24,10 @@ public class App {
         // create a parser that feeds off the tokens buffer
         compiladoresParser parser = new compiladoresParser(tokens);
                 
-        // create Listener
-        // ExpRegBaseListener escucha = new Escucha();
+        // // create Listener
+        // compiladoresBaseListener escucha = new miListener();
 
-        // Conecto el objeto con Listeners al parser
+        // // Conecto el objeto con Listeners al parser
         // parser.addParseListener(escucha);
 
         // Solicito al parser que comience indicando una regla gramatical
