@@ -3,20 +3,6 @@ grammar compiladores;
 @header {
 package compiladores;
 }
-// Dado el proyecto base de Java con ANTLR presentado en clases, realizar el archivo .g4 con las expresiones regulares y reglas sintácticas que contemple las siguientes instrucciones:
-
-// declaracion -> int x;
-//                double y;
-//                int z = 0;
-//                double w, q, t;
-//                int a = 5, b, c = 10;
-
-// asignacion -> x = 1;
-//               z = y;
-
-// iwhile -> while (x comp y) { instrucciones }
-
-// NOTA: Entregar solamente el archivo *.g4
 
 fragment DIGITO : [0-9] ;
 
@@ -66,11 +52,13 @@ IRETURN: 'return';
 // Nombre de variables
 VAR: [a-zA-Z]+ ;
 
+// Skip
 WS : [ \t\n\r] -> skip;
 
-// Declaracion de entero y doble en numeros
+// Declaracion de entero, doble y bool en numeros
 ENTERO : DIGITO+ ;
 DOBLE: DIGITO+ '.' DIGITO+;
+BOOLEANO: ( TRUE | FALSE );
 
 programa : instrucciones EOF ;
 
@@ -89,8 +77,10 @@ instruccion : declaracion PyC
 
 declaracion: INT VAR concatenacion 
             | DOUBLE VAR concatenacion 
+            | BOOL VAR concatenacion 
             | INT asignacion concatenacion 
             | DOUBLE asignacion concatenacion 
+            | BOOL asignacion concatenacion 
             ;
 
 concatenacion: COM VAR concatenacion 
@@ -101,6 +91,7 @@ concatenacion: COM VAR concatenacion
 asignacion: VAR IGU VAR
             | VAR IGU ENTERO
             | VAR IGU DOBLE
+            | VAR IGU BOOLEANO
             ;
 
 bloque: LA instrucciones LC;
@@ -210,6 +201,7 @@ t: MULT term
 
 factor: ENTERO
       | DOBLE
+      | BOOLEANO
       | VAR
       | PA e PC
       ;
