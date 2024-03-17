@@ -26,8 +26,6 @@ public class App {
                 
         // create Listener
         compiladoresBaseListener escucha = new miListener();
-        
-        // compiladoresBaseVisitor visitante = new miVisitor();
 
         // Conecto el objeto con Listeners al parser
         parser.addParseListener(escucha);
