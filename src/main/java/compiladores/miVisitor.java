@@ -9,6 +9,5 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         // TODO Auto-generated method stub
         System.out.println("A recorrer el arbol");
         return super.visitPrograma(ctx);
-    }
-    
+    }    
 }
