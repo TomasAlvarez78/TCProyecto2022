@@ -13,7 +13,7 @@ public class App {
         // CharStream input = CharStreams.fromFileName("input/entrada.txt");
         // CharStream input = CharStreams.fromFileName("input/FechasHoras.txt");
         // CharStream input = CharStreams.fromFileName("input/parentesis.txt");
-        CharStream input = CharStreams.fromFileName("input/codigo.txt");
+        CharStream input = CharStreams.fromFileName("input/codigo2.txt");
 
         // create a lexer that feeds off of input CharStream
         compiladoresLexer lexer = new compiladoresLexer(input);
@@ -24,25 +24,34 @@ public class App {
         // create a parser that feeds off the tokens buffer
         compiladoresParser parser = new compiladoresParser(tokens);
                 
-        // // create Listener
-        // compiladoresBaseListener escucha = new miListener();
+        // create Listener
+        compiladoresBaseListener escucha = new miListener();
+        
+        // compiladoresBaseVisitor visitante = new miVisitor();
 
-        // // Conecto el objeto con Listeners al parser
-        // parser.addParseListener(escucha);
+        // Conecto el objeto con Listeners al parser
+        parser.addParseListener(escucha);
 
         // Solicito al parser que comience indicando una regla gramatical
         // En este caso la regla es el simbolo inicial
-        parser.programa();
+        // parser.programa();
+
         
         // El parse devuelve un arbol sintactico
-        // ParseTree tree =  parser.s();
+        ParseTree tree =  parser.programa();
+        
         // Conectamos el visitor
-        // Caminante visitor = new Caminante();
+        // miVisitor visitor = new miVisitor();
         // visitor.visit(tree);
-        // System.out.println(visitor);
+        // System.out.println(visitor);        
         // System.out.println(visitor.getErrorNodes());
+        
         // Imprime el arbol obtenido
-        // System.out.println(tree.toStringTree(parser));
+        System.out.println("============== ARBOL SEMANTICO ==============");
+        System.out.println(tree.toStringTree(parser));
+        System.out.println("============== FIN ARBOL SEMANTICO ==============\n");
+
+        
         // System.out.println(escucha);
         
     }

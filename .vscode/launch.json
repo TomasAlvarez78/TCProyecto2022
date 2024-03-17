@@ -19,13 +19,6 @@
             "visualParseTree": true
         },
         {
-            "name": "Python: Current File",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal"
-        },
-        {
             "type": "java",
             "name": "Launch Current File",
             "request": "launch",
@@ -33,7 +26,7 @@
         },
         {
             "type": "java",
-            "name": "Launch App",
+            "name": "Launch App Arbol",
             "request": "launch",
             "mainClass": "compiladores.App",
             "projectName": "proyectobase"
