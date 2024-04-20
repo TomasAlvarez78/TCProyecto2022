@@ -6,6 +6,8 @@ package compiladores;
 import compiladores.compiladoresParser.BloqueContext;
 import compiladores.compiladoresParser.ConcatenacionContext;
 import compiladores.compiladoresParser.CondContext;
+import compiladores.compiladoresParser.DeclaracionContext;
+import compiladores.compiladoresParser.Declaracion_concatContext;
 import compiladores.compiladoresParser.EContext;
 import compiladores.compiladoresParser.ProgramaContext;
 
@@ -57,16 +59,10 @@ public class miListener extends compiladoresBaseListener {
     @Override 
     public void exitDeclaracion(compiladoresParser.DeclaracionContext declaracionInicial) {
 
-        ID.TipoDato varActual = null;
-        
-        // Guardo el tipo de variable dentro de una variable
-        if(declaracionInicial.INT() != null){
-            varActual = ID.TipoDato.valueOf("INT");
-        }else if(declaracionInicial.DOUBLE() != null){
-            varActual = ID.TipoDato.valueOf("DOUBLE");
-        }else if(declaracionInicial.BOOL() != null){
-            varActual = ID.TipoDato.valueOf("BOOL");
-        }
+        System.out.println("Declaracion");
+
+        ID.TipoDato varActual = ID.TipoDato.valueOf(declaracionInicial.tipo_var().getText().toUpperCase());
+        // varActual = (ID.TipoDato) declaracionInicial.tipo_var().getText().toUpperCase();
 
         // Declaro la variable, con el tipo y el nombre
         ID id = new Variable(varActual,declaracionInicial.VAR().getText());
@@ -81,31 +77,29 @@ public class miListener extends compiladoresBaseListener {
 
         // Hasta aca crea una variable
 
-        if (declaracionInicial.concatenacion().getText() != ""){
-
-            ConcatenacionContext concatCtx = declaracionInicial.concatenacion();
-
-            do{
-                id = new Variable(varActual,concatCtx.VAR().getText());
-                if (!this.TablaSimbolos.isVariableDeclared(id.getNombre())) {
-                    this.TablaSimbolos.addId(id);
-                    // System.out.println("\n =====> Nombre de la variable =====> " + id.getNombre());
-                }else{
-                    System.out.println("\nError semantico ==> La variable " + id.getNombre() + " ya existe");
-                }
-                concatCtx = concatCtx.concatenacion();
-            }while( concatCtx.getText() != "");
-        }
-        
+        AuxConcatenacion(declaracionInicial.declaracion_concat(),varActual);        
     }
 
     @Override 
     public void exitAsignacion( compiladoresParser.AsignacionContext ctxAsignacion ){
         // Me fijo en la tabla de simbolos si la VAR de la izquierda esta declarada
-        if ( this.TablaSimbolos.isVariableDeclared(ctxAsignacion.VAR(0).getText()) ){
+
+        String varAux = "";
+
+        System.out.println("Asignacion");
+        
+        if(ctxAsignacion.getParent() instanceof compiladoresParser.ConcatenacionContext){
+            compiladoresParser.DeclaracionContext ctxDeclaracion = (compiladoresParser.DeclaracionContext) ctxAsignacion.getParent().getChild(0);
+            // System.out.println(ctxDeclaracion.VAR().getText());
+            varAux = ctxDeclaracion.VAR().getText();
+        }else{ 
+            varAux = ctxAsignacion.VAR(0).getText();
+        }
+
+        if ( this.TablaSimbolos.isVariableDeclared(varAux)){
             
             // Extraigo la variable dentro de un objeto
-            Variable varTabla = this.TablaSimbolos.getVariableDeclared(ctxAsignacion.VAR(0).getText());
+            Variable varTabla = this.TablaSimbolos.getVariableDeclared(varAux);
 
             // Aseguro el tipo de variablo de los datos primitivos
             ID.TipoDato varActual = null;
@@ -202,6 +196,48 @@ public class miListener extends compiladoresBaseListener {
 
         }else{
             System.out.println("\nError ==> No se puede inicializar una variable no declarada");
+        }
+    }
+
+    
+
+    @Override
+    public void enterConcatenacion(ConcatenacionContext ctx) {
+        // TODO Auto-generated method stub
+        System.out.println("EntradaConcatenacion");
+        super.enterConcatenacion(ctx);
+    }
+
+    @Override
+    public void exitConcatenacion(ConcatenacionContext ctx) {
+        // TODO Auto-generated method stub
+        
+        if (ctx.declaracion_concat().getText() != ""){
+
+            compiladoresParser.DeclaracionContext ctxDeclaracion = (compiladoresParser.DeclaracionContext) ctx.declaracion();
+            
+            ID.TipoDato varActual = ID.TipoDato.valueOf(ctxDeclaracion.tipo_var().getText().toUpperCase());
+
+            AuxConcatenacion(ctx.declaracion_concat(),varActual);
+        }
+
+        System.out.println("Salida Concatenacion");
+        super.exitConcatenacion(ctx);
+    }
+
+    private void AuxConcatenacion(Declaracion_concatContext ctxConcat,  ID.TipoDato varActual){
+        
+        if (ctxConcat.getText() != ""){
+
+            do{
+                ID id = new Variable(varActual, ctxConcat.VAR().getText());
+                if (!this.TablaSimbolos.isVariableDeclared(id.getNombre())) {
+                    this.TablaSimbolos.addId(id);
+                }else{
+                    System.out.println("\nError semantico ==> La variable " + id.getNombre() + " ya existe");
+                }
+                ctxConcat = ctxConcat.declaracion_concat();
+            }while( ctxConcat.getText() != "");
         }
     }
 

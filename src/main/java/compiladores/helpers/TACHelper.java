@@ -1,7 +1,7 @@
-package app.helpers;
+package compiladores.helpers;
 
-import app.models.SharedVariable;
-import app.models.TACLevel;
+import compiladores.Clases.SharedVariable;
+import compiladores.Clases.TACLevel;
 
 import java.io.File;
 import java.io.FileNotFoundException;

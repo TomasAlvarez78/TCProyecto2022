@@ -68,32 +68,31 @@ instrucciones : instruccion instrucciones
 
 instruccion : declaracion PyC
             | asignacion PyC
+            | concatenacion PyC
             | bucle_while 
             | condicional_if
             | bucle_for
             | declaracion_funcion
             | asignacion_funcion
             ;
+// Inicio fix
 
-declaracion: INT VAR concatenacion 
-            | DOUBLE VAR concatenacion 
-            | BOOL VAR concatenacion 
-            | INT asignacion concatenacion 
-            | DOUBLE asignacion concatenacion 
-            | BOOL asignacion concatenacion 
+declaracion: tipo_var VAR declaracion_concat;
+
+declaracion_concat: COM VAR declaracion_concat 
+            |
             ;
 
-concatenacion: COM VAR concatenacion 
-              | COM asignacion
-              |
-              ;
-
-asignacion: VAR IGU VAR
-            | VAR IGU ENTERO
-            | VAR IGU DOBLE
-            | VAR IGU BOOLEANO
+asignacion: VAR IGU (ENTERO | DOBLE | BOOLEANO | VAR) 
+            | IGU (ENTERO | DOBLE | BOOLEANO | VAR) 
+            | 
             ;
 
+
+// concatenacion:  tipo_var VAR IGU (ENTERO | DOBLE | BOOLEANO | VAR) ;
+concatenacion:  declaracion asignacion declaracion_concat;
+
+// Final fix
 bloque: LA instrucciones LC;
 
 op_logicos: AND

@@ -8,12 +8,17 @@ import org.antlr.v4.runtime.CommonTokenStream;
 // Las diferentes entradas se explicaran oportunamente
 public class App {
     public static void main(String[] args) throws Exception {
-        System.out.println("Hello, Compilador!!!");
+        System.out.println("Start main compiler");
+
+        // int x, y;
+        // x = 10;
+        // int z = 1, u = 2; 
         // create a CharStream that reads from file
         // CharStream input = CharStreams.fromFileName("input/entrada.txt");
         // CharStream input = CharStreams.fromFileName("input/FechasHoras.txt");
         // CharStream input = CharStreams.fromFileName("input/parentesis.txt");
-        CharStream input = CharStreams.fromFileName("input/codigo2.txt");
+        // CharStream input = CharStreams.fromFileName("input/codigo2.txt");
+        CharStream input = CharStreams.fromFileName("input/codigo4.txt");
 
         // create a lexer that feeds off of input CharStream
         compiladoresLexer lexer = new compiladoresLexer(input);
