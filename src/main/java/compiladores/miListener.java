@@ -6,7 +6,6 @@ package compiladores;
 import compiladores.compiladoresParser.BloqueContext;
 import compiladores.compiladoresParser.ConcatenacionContext;
 import compiladores.compiladoresParser.CondContext;
-import compiladores.compiladoresParser.DeclaracionContext;
 import compiladores.compiladoresParser.Declaracion_concatContext;
 import compiladores.compiladoresParser.EContext;
 import compiladores.compiladoresParser.ProgramaContext;
