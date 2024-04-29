@@ -75,7 +75,6 @@ instruccion : declaracion PyC
             | declaracion_funcion
             | asignacion_funcion
             ;
-// Inicio fix
 
 declaracion: tipo_var VAR declaracion_concat;
 
@@ -83,16 +82,18 @@ declaracion_concat: COM VAR declaracion_concat
             |
             ;
 
-asignacion: VAR IGU (ENTERO | DOBLE | BOOLEANO | VAR) 
-            | IGU (ENTERO | DOBLE | BOOLEANO | VAR) 
-            | 
+asignacion: VAR IGU (ENTERO | DOBLE | BOOLEANO | VAR)
+            |
             ;
 
+concatenacion: tipo_var VAR concatenacion_concat;
+concatenacion_concat: IGU (ENTERO | DOBLE | BOOLEANO | VAR) concatenacion_concat
+            | COM VAR IGU (ENTERO | DOBLE | BOOLEANO | VAR) concatenacion_concat
+            | COM VAR concatenacion_concat
+            |
+            ;
+// concatenacion:  declaracion asignacion declaracion_concat;
 
-// concatenacion:  tipo_var VAR IGU (ENTERO | DOBLE | BOOLEANO | VAR) ;
-concatenacion:  declaracion asignacion declaracion_concat;
-
-// Final fix
 bloque: LA instrucciones LC;
 
 op_logicos: AND
