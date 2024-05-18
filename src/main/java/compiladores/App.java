@@ -14,11 +14,7 @@ public class App {
         // x = 10;
         // int z = 1, u = 2; 
         // create a CharStream that reads from file
-        // CharStream input = CharStreams.fromFileName("input/entrada.txt");
-        // CharStream input = CharStreams.fromFileName("input/FechasHoras.txt");
-        // CharStream input = CharStreams.fromFileName("input/parentesis.txt");
-        // CharStream input = CharStreams.fromFileName("input/codigo2.txt");
-        CharStream input = CharStreams.fromFileName("input/codigo4.txt");
+        CharStream input = CharStreams.fromFileName("input/codigo5.txt");
 
         // create a lexer that feeds off of input CharStream
         compiladoresLexer lexer = new compiladoresLexer(input);
@@ -44,9 +40,9 @@ public class App {
         ParseTree tree =  parser.programa();
         
         // Conectamos el visitor
-        // miVisitor visitor = new miVisitor();
-        // visitor.visit(tree);
-        // System.out.println(visitor);        
+        miVisitor visitor = new miVisitor();
+        visitor.visit(tree);
+        System.out.println(visitor);        
         // System.out.println(visitor.getErrorNodes());
         
         // Imprime el arbol obtenido

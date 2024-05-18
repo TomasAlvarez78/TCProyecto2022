@@ -8,9 +8,12 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import compiladores.compiladoresParser.AsignacionContext;
 import compiladores.compiladoresParser.ProgramaContext;
-// import compiladores.compiladoresParser.FactorContext;5
+import compiladores.compiladoresParser.TContext;
+import compiladores.compiladoresParser.TermContext;
+import compiladores.compiladoresParser.FactorContext;
 import compiladores.Clases.SharedVariable;
-// import compiladores.Clases.TACLevel;5
+import compiladores.Clases.TACLevel;
+// import compiladores.Clases.TACLevel;
 import compiladores.helpers.TACHelper;
 
 public class miVisitor extends compiladoresBaseVisitor<String> {
@@ -36,7 +39,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 
     public String visitAllChildren(RuleContext ctx){
         for (int i = 0; i < ctx.getChildCount(); i++){
-            // System.out.println(ctx.getChild(i));
+            System.out.println(ctx.getChild(i).getText());
             visit(ctx.getChild(i));
         }
         return "";
@@ -46,40 +49,46 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     @Override
     public String visitAsignacion(AsignacionContext ctx) {
 
-        // String id = null;
+        String id = null;
 
-        // id = ctx.VAR().get(0).toString();
+        TACLevel currentLevel = TACHelper.getInstance().addLevel();
 
-        // System.out.println(ctx.getParent().getText()); // x=10;
-        
-        
-        // TACHelper.getInstance().getLastLevel().getFactors().add(ctx.getText());
-    
-        // TACLevel currentLevel = TACHelper.getInstance().addLevel();
-        System.out.println("Dentro de asignacion");
-        // System.out.println(ctx.factor().getText());
+        // System.out.println(currentLevel);
         visitAllChildren(ctx);
 
-        // TACHelper.getInstance().writeTAC(id + " = " + currentLevel.getFactors().get(0));
-        // TACHelper.getInstance().writeTAC(id + " = " + ctx.factor().getText());
-        TACHelper.getInstance().removeLastLevel();
-        
-        // System.out.println("======================");
-        // System.out.println(ctx);
-        // System.out.println("======================");
+        TACHelper.getInstance().writeTAC(id + " = " + currentLevel.getFactors().get(0));
+
 
         return super.visitAsignacion(ctx);
     }
 
-    // @Override
-    // public String visitFactor(FactorContext ctx) {
+    @Override
+    public String visitFactor(FactorContext ctx) {
 
-    //     System.out.println("Entra a un factor");
-    //     System.out.println(ctx.getText());
-    //     // TACHelper.getInstance().getLastLevel().getFactors().add(ctx.getText());
+        System.out.println("Entra a un factor");
+        System.out.println(ctx.getText());
+        // TACHelper.getInstance().getLastLevel().getFactors().add(ctx.getText());
 
-    //     return super.visitFactor(ctx);
-    // }
+        return super.visitFactor(ctx);
+    }
+
+    @Override
+    public String visitT(TContext arg0) {
+        // TODO Auto-generated method stub
+        System.out.println("Entra a un t");
+        return super.visitT(arg0);
+    }
+
+    @Override
+    public String visitTerm(TermContext arg0) {
+        // TODO Auto-generated method stub
+        System.out.println("Entra a un term");
+        return super.visitTerm(arg0);
+    }
+
+    
+
+
 
     
 
