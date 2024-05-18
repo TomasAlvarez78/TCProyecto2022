@@ -82,7 +82,7 @@ declaracion_concat: COM VAR declaracion_concat
             |
             ;
 
-asignacion: VAR IGU (ENTERO | DOBLE | BOOLEANO | VAR)
+asignacion: VAR IGU e
             |
             ;
 

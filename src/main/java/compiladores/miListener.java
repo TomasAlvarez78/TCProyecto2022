@@ -19,6 +19,9 @@ import compiladores.Clases.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
+
 public class miListener extends compiladoresBaseListener {
 
     private boolean showTabla = true;
@@ -105,8 +108,10 @@ public class miListener extends compiladoresBaseListener {
         String varAux = "";
 
         System.out.println("Asignacion");
+
+        System.out.println(ctxAsignacion.VAR().getText());
         
-        varAux = ctxAsignacion.VAR(0).getText();
+        varAux = ctxAsignacion.VAR().getText();
 
         // if(ctxAsignacion.getParent() instanceof compiladoresParser.ConcatenacionContext){
         //     compiladoresParser.DeclaracionContext ctxDeclaracion = (compiladoresParser.DeclaracionContext) ctxAsignacion.getParent().getChild(0);
@@ -120,6 +125,27 @@ public class miListener extends compiladoresBaseListener {
 
     }
 
+    public ArrayList<String> calcularResultado(String input){
+        
+        Expression exp = new ExpressionBuilder(input).build();
+        
+        ArrayList<String> list = new ArrayList<>();
+        
+        double result = exp.evaluate();
+        
+        if (result == (int) result) {
+            list.add("INT");
+            list.add(String.valueOf((int)result));
+        } else {
+            list.add("DOUBLE");
+            list.add(String.valueOf(result));
+        }
+        
+        // list.add(tipo);
+
+        return list;
+    }
+
     public void AuxAsignacion(compiladoresParser.AsignacionContext ctxAsignacion, String varAux) {
         if ( this.TablaSimbolos.isVariableDeclared(varAux) ){
             
@@ -127,23 +153,32 @@ public class miListener extends compiladoresBaseListener {
 
             ID.TipoDato varActual = null;
 
-            if(ctxAsignacion.ENTERO() != null){
+            ArrayList<String> list = new ArrayList<String>();
+
+            if (ctxAsignacion.e().term().factor().BOOLEANO() == null && ctxAsignacion.e().term().factor().VAR() == null){
+                System.out.println(ctxAsignacion.e().getText()); 
+                list = calcularResultado(ctxAsignacion.e().getText());
+                varActual = ID.TipoDato.valueOf(list.get(0));
+            }
+
+            // if(ctxAsignacion.e().term().factor().ENTERO() != null){
                 
-                varActual = ID.TipoDato.valueOf("INT");
+            //     varActual = ID.TipoDato.valueOf("INT");
 
-            }else if(ctxAsignacion.DOBLE() != null){
+            // }else if(ctxAsignacion.e().term().factor().DOBLE() != null){
 
-                varActual = ID.TipoDato.valueOf("DOUBLE");
+            //     varActual = ID.TipoDato.valueOf("DOUBLE");
 
-            }else if(ctxAsignacion.BOOLEANO() != null){
+            // }else 
+            if(ctxAsignacion.e().term().factor().BOOLEANO() != null){
 
                 varActual = ID.TipoDato.valueOf("BOOL");
 
-            }else if(ctxAsignacion.VAR() != null){
+            }else if(ctxAsignacion.e().term().factor().VAR() != null){
 
-                if( this.TablaSimbolos.isVariableDeclared(ctxAsignacion.VAR(1).getText())){
+                if( this.TablaSimbolos.isVariableDeclared(ctxAsignacion.e().term().factor().VAR().getText())){
                     
-                    Variable varDerecha = this.TablaSimbolos.getVariableDeclared(ctxAsignacion.VAR(1).getText());
+                    Variable varDerecha = this.TablaSimbolos.getVariableDeclared(ctxAsignacion.e().term().factor().VAR().getText());
 
                     if (varTabla.getTipo() == varDerecha.getTipo()){
 
@@ -163,23 +198,27 @@ public class miListener extends compiladoresBaseListener {
                 }else{
                     System.out.println("\nError semantico ==> La segunda variable no esta declarada");
                 }
+                return;
             }
                         
             if (varActual != null){
                 if (varActual == varTabla.getTipo()){
 
-                    if(ctxAsignacion.ENTERO() != null){
+                    // if(ctxAsignacion.e().term().factor().ENTERO() != null){
 
-                        varTabla.setValor(ctxAsignacion.ENTERO().getText());
+                    //     varTabla.setValor(list.get(1));
 
-                    }else if(ctxAsignacion.DOBLE() != null){
+                    // }else if(ctxAsignacion.e().term().factor().DOBLE() != null){
 
-                        varTabla.setValor(ctxAsignacion.DOBLE().getText());
+                    //     varTabla.setValor(list.get(1));
 
-                    }else if(ctxAsignacion.BOOLEANO() != null){
+                    // }else 
+                    if(ctxAsignacion.e().term().factor().BOOLEANO() != null){
 
-                        varTabla.setValor(ctxAsignacion.BOOLEANO().getText());
+                        varTabla.setValor(ctxAsignacion.e().term().factor().BOOLEANO().getText());
                         
+                    } else {
+                        varTabla.setValor(list.get(1));
                     }
                     this.TablaSimbolos.asignacionId(varTabla);
                     
