@@ -184,22 +184,22 @@ comparadores : GT
              | NEQ
              ;
 
-e: term exp;
+e: term exp; // nivel 0
 
-exp: SUMA e
+exp: SUMA e // nivel 1
     | RESTA e
     |
     ;
 
-term: factor t;
+term: factor t; // nivel 1
 
-t: MULT term
+t: MULT term // nivel 2
  | DIV term
  | MOD term
  |
  ;
 
-factor: ENTERO
+factor: ENTERO // nivel 2
       | DOBLE
       | BOOLEANO
       | VAR
