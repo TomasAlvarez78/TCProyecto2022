@@ -241,6 +241,7 @@ public class miListener extends compiladoresBaseListener {
     @Override
     public void exitConcatenacion(ConcatenacionContext concatenacionContext) {
 
+
         System.out.println(concatenacionContext.getText());
 
         String input = concatenacionContext.getText();

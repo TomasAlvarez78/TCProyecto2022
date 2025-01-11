@@ -37,11 +37,11 @@ MOD: '%';
 // Variables
 INT : 'int' ;
 DOUBLE: 'double';
-BOOL: 'boolean';
+BOOL: 'bool';
 
 // Booleanos
-TRUE: 'true';
-FALSE: 'false';
+ITRUE: 'true';
+IFALSE: 'false';
 
 // Palabras reservadas
 IWHILE: 'while';
@@ -49,16 +49,17 @@ IIF: 'if';
 IFOR: 'for';
 IRETURN: 'return';
 
+
 // Nombre de variables
 VAR: [a-zA-Z]+ ;
-
-// Skip
-WS : [ \t\n\r] -> skip;
 
 // Declaracion de entero, doble y bool en numeros
 ENTERO : DIGITO+ ;
 DOBLE: DIGITO+ '.' DIGITO+;
-BOOLEANO: ( TRUE | FALSE );
+BOOLEANO: ITRUE | IFALSE;
+
+// Skip
+WS : [ \t\n\r] -> skip;
 
 programa : instrucciones EOF ;
 
@@ -100,8 +101,8 @@ op_logicos: AND
           | OR
           ;
 
-op_booleanas: TRUE
-            | FALSE
+op_booleanas: ITRUE
+            | IFALSE
             ;
 
 bucle_while: IWHILE PA cond PC bloque;

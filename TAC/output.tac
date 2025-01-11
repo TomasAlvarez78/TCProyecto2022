@@ -1,7 +1,5 @@
-i = 4
-T1 = i + 3
-T2 = 7 + 5
-T3 = 6 + 3
-T4 = T1 + T2
-T5 = T3 * T4
-z = T5
+a = 10
+T1 = a > 5
+IFNJMP T1, L1
+b = 3
+LABEL L1
