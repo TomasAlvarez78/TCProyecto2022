@@ -6,6 +6,8 @@ package compiladores;
 
 fragment DIGITO : [0-9] ;
 
+// Bool useless for the moment,
+
 // Caracteres especiales
 PA : '(';
 PC : ')';
