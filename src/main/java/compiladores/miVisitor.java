@@ -8,6 +8,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import compiladores.compiladoresParser.AsignacionContext;
 import compiladores.compiladoresParser.BloqueContext;
+import compiladores.compiladoresParser.Bucle_forContext;
 import compiladores.compiladoresParser.CondContext;
 import compiladores.compiladoresParser.Condicional_ifContext;
 import compiladores.compiladoresParser.EContext;
@@ -17,7 +18,8 @@ import compiladores.compiladoresParser.TContext;
 import compiladores.compiladoresParser.TermContext;
 import compiladores.compiladoresParser.FactorContext;
 import compiladores.compiladoresParser.InstruccionContext;
-// import compiladores.compiladoresParser.InstruccionesContext;
+import compiladores.compiladoresParser.IncrementoContext;
+import compiladores.compiladoresParser.DecrementoContext;
 import compiladores.Clases.SharedVariable;
 import compiladores.Clases.TACLevel;
 import compiladores.helpers.TACHelper;
@@ -59,16 +61,26 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 
         TACLevel currentLevel = TACHelper.getInstance().addLevel();
 
-        visitAllChildren(ctx);
+        visit(ctx.e());
 
         System.out.println(currentLevel.getFactors().size());
 
         if (currentLevel.getFactors().size() > 1){
+           
             auxTemporal(ctx);
         }else{
+
             TACHelper.getInstance().writeTAC(id + " = " + currentLevel.getFactors().get(0));
             TACHelper.getInstance().removeLastLevel();
         }
+
+        System.out.println(ctx.asignacion());
+
+        if (ctx.asignacion() != null){
+            System.out.println("Existe un asignacion dentro");
+            visit(ctx.asignacion());
+        }
+
         return "";
     }
 
@@ -173,6 +185,51 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         TACHelper.getInstance().writeTAC("LABEL " + startLabel);
 
         return "";
+    }
+
+    
+
+    @Override
+    public String visitIncremento(IncrementoContext ctx) {
+        // TODO Auto-generated method stub
+
+        // post_pre_incremento
+
+        String id = ctx.VAR().getText();
+
+        if(ctx.SUMA() != null){
+            TACHelper.getInstance().writeTAC(id + " = " + id +  " + 1");
+        }else if (ctx.RESTA() != null){
+            TACHelper.getInstance().writeTAC(id + " = " + id +  " - 1");
+        }
+
+        return "";
+    }
+
+    @Override
+    public String visitDecremento(DecrementoContext ctx) {
+        // TODO Auto-generated method stub
+
+        String id = ctx.VAR().getText();
+
+        if(ctx.SUMA() != null){
+            TACHelper.getInstance().writeTAC(id + " = " + id +  " + 1");
+        }else if (ctx.RESTA() != null){
+            TACHelper.getInstance().writeTAC(id + " = " + id +  " - 1");
+        }
+
+        return "";
+    }
+
+    @Override
+    public String visitBucle_for(Bucle_forContext ctx) {
+        // TODO Auto-generated method stub
+        
+        System.out.println("Entre a un bucleFor");
+
+        System.out.println("Sali de un bucleFor");
+
+        return super.visitBucle_for(ctx);
     }
 
     public void auxTemporal(RuleContext ctx) {

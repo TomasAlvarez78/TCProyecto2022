@@ -7,7 +7,9 @@ import compiladores.compiladoresParser.BloqueContext;
 import compiladores.compiladoresParser.ConcatenacionContext;
 import compiladores.compiladoresParser.CondContext;
 import compiladores.compiladoresParser.Declaracion_concatContext;
+import compiladores.compiladoresParser.DecrementoContext;
 import compiladores.compiladoresParser.EContext;
+import compiladores.compiladoresParser.IncrementoContext;
 import compiladores.compiladoresParser.ProgramaContext;
 
 import java.util.ArrayList;
@@ -234,7 +236,7 @@ public class miListener extends compiladoresBaseListener {
     
     @Override
     public void enterConcatenacion(ConcatenacionContext arg0) {
-        System.out.println("enterConcatenacion");
+        // System.out.println("enterConcatenacion");
         super.enterConcatenacion(arg0);
     }
 
@@ -362,7 +364,59 @@ public class miListener extends compiladoresBaseListener {
         this.TablaSimbolos.removeContext();
         
     }
+
     
+    
+    @Override
+    public void exitDecremento(DecrementoContext ctx) {
+        // TODO Auto-generated method stub
+
+        // Declaro la variable, con el tipo y el nombre
+        String idName = ctx.VAR().getText();
+
+        // Guardo la variable en la Tabla de Simbolos si no esta declarada
+        if (this.TablaSimbolos.isVariableDeclared(idName)) {
+            // if ()
+            ID id = this.TablaSimbolos.getVariableDeclared(idName);
+            if( id.getTipo() == ID.TipoDato.valueOf("INT") || id.getTipo() == ID.TipoDato.valueOf("DOUBLE")){
+                int tmpResult = Integer.valueOf(id.getValor()) - 1;
+                id.setValor(String.valueOf(tmpResult));
+                this.TablaSimbolos.setUsedId(idName);
+            }else{
+            System.out.println("\n Error semantico ==> La variable " + id.getNombre() + " no es del tipo correcto");
+            }
+        }else{
+            System.out.println("\n Error semantico ==> La variable " + idName + " no existe");
+        }
+
+        super.exitDecremento(ctx);
+    }
+
+    @Override
+    public void exitIncremento(IncrementoContext ctx) {
+        // TODO Auto-generated method stub
+
+        // Declaro la variable, con el tipo y el nombre
+        String idName = ctx.VAR().getText();
+
+        // Guardo la variable en la Tabla de Simbolos si no esta declarada
+        if (this.TablaSimbolos.isVariableDeclared(idName)) {
+            // if ()
+            ID id = this.TablaSimbolos.getVariableDeclared(idName);
+            if( id.getTipo() == ID.TipoDato.valueOf("INT") || id.getTipo() == ID.TipoDato.valueOf("DOUBLE")){
+                int tmpResult = Integer.valueOf(id.getValor()) + 1;
+                id.setValor(String.valueOf(tmpResult));
+                this.TablaSimbolos.setUsedId(idName);
+            }else{
+            System.out.println("\n Error semantico ==> La variable " + id.getNombre() + " no es del tipo correcto");
+            }
+        }else{
+            System.out.println("\n Error semantico ==> La variable " + idName + " no existe");
+        }
+
+        super.exitIncremento(ctx);
+    }
+
     @Override
     public void enterPrograma(ProgramaContext ctx) {
         System.out.println("\n\n\n" );

@@ -72,6 +72,8 @@ instrucciones : instruccion instrucciones
 instruccion : declaracion PyC
             | asignacion PyC
             | concatenacion PyC
+            | incremento PyC
+            | decremento PyC
             | bucle_while 
             | condicional_if
             | bucle_for
@@ -86,7 +88,9 @@ declaracion_concat: COM VAR declaracion_concat
             ;
 
 asignacion: VAR IGU e
-            |
+            | tipo_var VAR IGU e
+            | tipo_var VAR IGU e COM asignacion
+            | 
             ;
 
 concatenacion: tipo_var VAR concatenacion_concat;
@@ -111,7 +115,7 @@ bucle_while: IWHILE PA cond PC bloque;
 
 condicional_if: IIF PA cond PC bloque;
 
-bucle_for: IFOR PA (declaracion PyC cond PyC post_pre_incremento ) PC bloque;
+bucle_for: IFOR PA ( declaracion PyC cond PyC (incremento | decremento) ) PC bloque;
 
 // Declaracion Funcion
 // e 34:4 mismatched input 'return' expecting {'int', 'double', 'while', 'if', 'for', VAR}
@@ -165,13 +169,13 @@ tipo_var: INT
         | BOOL
         ;
 
-post_pre_incremento: VAR SUMA SUMA
-                   | VAR RESTA RESTA
-                   | SUMA SUMA VAR
-                   | RESTA RESTA VAR
-                   | VAR IGU VAR SUMA factor 
-                   | VAR IGU VAR RESTA factor     
-                   ;
+incremento: VAR SUMA SUMA
+            | VAR RESTA RESTA
+            ;
+
+decremento: SUMA SUMA VAR
+            | RESTA RESTA VAR
+            ;
 
 cond: e comparadores e 
     | cond op_logicos cond
