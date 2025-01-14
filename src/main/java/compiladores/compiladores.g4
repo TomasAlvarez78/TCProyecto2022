@@ -86,19 +86,29 @@ declaracion: tipo_var VAR declaracion_concat;
 declaracion_concat: COM VAR declaracion_concat 
             |
             ;
-
+//  a = 10;
+// int a = 10;
 asignacion: VAR IGU e
-            | tipo_var VAR IGU e
-            | tipo_var VAR IGU e COM asignacion
+            | tipo_var VAR IGU e 
             | 
             ;
+// int a;
+// int a = 10, b = 10;
 
-concatenacion: tipo_var VAR concatenacion_concat;
-concatenacion_concat: IGU (ENTERO | DOBLE | BOOLEANO | VAR) concatenacion_concat
-            | COM VAR IGU (ENTERO | DOBLE | BOOLEANO | VAR) concatenacion_concat
-            | COM VAR concatenacion_concat
-            |
+// int a = 10, b = 10, c;
+concatenacion: tipo_var VAR concatenacion
+            | tipo_var VAR IGU e concatenacion
+            | COM VAR IGU e concatenacion
+            | COM VAR IGU e
+            | COM VAR
             ;
+            
+
+// concatenacion_concat: IGU e concatenacion_concat
+//             | COM VAR IGU e concatenacion_concat
+//             | COM VAR concatenacion_concat
+//             |
+//             ;
 // concatenacion:  declaracion asignacion declaracion_concat;
 
 bloque: LA instrucciones LC;
