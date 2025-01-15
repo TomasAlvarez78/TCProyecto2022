@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import compiladores.compiladoresParser.AsignacionContext;
 import compiladores.compiladoresParser.BloqueContext;
 import compiladores.compiladoresParser.Bucle_forContext;
+import compiladores.compiladoresParser.ConcatenacionContext;
 import compiladores.compiladoresParser.CondContext;
 import compiladores.compiladoresParser.Condicional_ifContext;
 import compiladores.compiladoresParser.EContext;
@@ -74,14 +75,57 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
             TACHelper.getInstance().removeLastLevel();
         }
 
-        System.out.println(ctx.asignacion());
+        // System.out.println(ctx.asignacion());
 
-        if (ctx.asignacion() != null){
-            System.out.println("Existe un asignacion dentro");
-            visit(ctx.asignacion());
-        }
+        // if (ctx.asignacion() != null){
+        //     System.out.println("Existe un asignacion dentro");
+        //     visit(ctx.asignacion());
+        // }
 
         return "";
+    }
+
+    
+    // Redeclarar
+    @Override
+    public String visitConcatenacion(ConcatenacionContext ctx) {
+        // TODO Auto-generated method stub
+        
+        System.out.println(ctx.getText());
+        
+        return super.visitConcatenacion(ctx);
+
+
+
+        // System.out.println("VISITOR CONCATENACION");
+
+        // String id = ctx.VAR().getText();
+
+        // TACLevel currentLevel = TACHelper.getInstance().addLevel();
+
+        // visit(ctx.e());
+
+        // System.out.println(currentLevel.getFactors().size());
+
+        // if (currentLevel.getFactors().size() > 1){
+           
+        //     auxTemporal(ctx);
+        // }else{
+
+        //     TACHelper.getInstance().writeTAC(id + " = " + currentLevel.getFactors().get(0));
+        //     TACHelper.getInstance().removeLastLevel();
+        // }
+
+        // System.out.println(ctx.concatenacion_concat());
+
+        // if (ctx.concatenacion_concat() == null){
+        //     System.out.println("Existe un asignacion dentro");
+        //     return "";
+        // }
+
+
+        // return "";
+
     }
 
     @Override
@@ -235,6 +279,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     public void auxTemporal(RuleContext ctx) {
 
         System.out.println("Entre al AuxTemporal");
+        System.out.println(ctx.getText());
         if(ctx.getChild(1).getChildCount() > 0) {
             TACLevel currentLevel = TACHelper.getInstance().addLevel();
 
@@ -261,7 +306,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
                 nextLevel.getFactors().add(levelResult);
             }
         }else{
-            visitAllChildren(ctx);
+            // visitAllChildren(ctx);
         }
     }
 }
