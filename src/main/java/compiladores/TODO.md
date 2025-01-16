@@ -27,6 +27,16 @@
             L1: TAC for if
             L2:
         ```
+        ```
+        t1 = 4 + 3 
+        t2 = a > t1   
+        if t2 goto L1   
+            codigo de else sin identar
+            goto L2  // else          
+        L1:                 
+            w = 5 // codigo de then / true
+        L2:   
+        ```
 
     a. ciclo for - visitor TAC
 

@@ -1,2 +1,9 @@
 int a = 1 + 2;
-int b = 3 + a;
+int b = 3;
+b = 4;
+
+if (a > 4) {
+    int w = 5;
+}else if (a < 4){
+    int z = 3;
+}

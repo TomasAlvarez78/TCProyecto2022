@@ -48,6 +48,7 @@ IFALSE: 'false';
 // Palabras reservadas
 IWHILE: 'while';
 IIF: 'if';
+IELSE: 'else';
 IFOR: 'for';
 IRETURN: 'return';
 
@@ -123,7 +124,11 @@ op_booleanas: ITRUE
 
 bucle_while: IWHILE PA cond PC bloque;
 
-condicional_if: IIF PA cond PC bloque;
+condicional_if: IIF PA cond PC bloque condicional_else;
+condicional_else: IELSE bloque
+                | IELSE condicional_if
+                |
+                ;
 
 bucle_for: IFOR PA ( declaracion PyC cond PyC (incremento | decremento) ) PC bloque;
 

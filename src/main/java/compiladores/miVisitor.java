@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import compiladores.compiladoresParser.AsignacionContext;
 import compiladores.compiladoresParser.BloqueContext;
 import compiladores.compiladoresParser.Bucle_forContext;
+import compiladores.compiladoresParser.ComparadoresContext;
 import compiladores.compiladoresParser.ConcatenacionContext;
 import compiladores.compiladoresParser.CondContext;
 import compiladores.compiladoresParser.Condicional_ifContext;
@@ -73,14 +74,6 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
             TACHelper.getInstance().writeTAC(id + " = " + currentLevel.getFactors().get(0));
             TACHelper.getInstance().removeLastLevel();
         }
-
-        // System.out.println(ctx.asignacion());
-
-        // if (ctx.asignacion() != null){
-        //     System.out.println("Existe un asignacion dentro");
-        //     visit(ctx.asignacion());
-        // }
-
         return "";
     }
 
@@ -123,71 +116,50 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     }
 
     @Override
-    public String visitCond(CondContext ctx) {
-
-        String id1 = ctx.e(0).getText();
-        String id2 = ctx.e(1).getText();
-        
-        // TACLevel currentLevel = TACHelper.getInstance().addLevel();
-
-        String tmp = TACHelper.getInstance().getNextTempVariable();
-
-        TACHelper.getInstance().writeTAC(tmp + " = " + id1 + " " + ctx.comparadores().getText() + " " + id2);
-
-        // TACHelper.getInstance().writeTAC();
-        // TACHelper.getInstance().removeLastLevel();
-
-        // visitAllChildren(ctx);
-
-        // System.out.println(currentLevel.getFactors().size());
-
-        // if (currentLevel.getFactors().size() > 1){
-        //     auxTemporal(ctx);
-        // }else{
-        //     TACHelper.getInstance().writeTAC(id + " = " + currentLevel.getFactors().get(0));
-        //     TACHelper.getInstance().removeLastLevel();
-        // }
-        return "";
-    }
-
-    @Override
     public String visitBloque(BloqueContext ctx) {
         visitAllChildren(ctx);
         return "";
-
     }
 
     @Override
-    public String visitE(EContext arg0) {
-        auxTemporal(arg0);
+    public String visitE(EContext ctx) {
+        auxTemporal(ctx);
         return "";
-        // return super.visitE(arg0);
     }
 
     @Override
-    public String visitExp(ExpContext arg0) {
-        if (arg0.getChildCount() !=  0 ) {
-            TACHelper.getInstance().getLastLevel().getSigns().add(arg0.getChild(0).getText());            
+    public String visitExp(ExpContext ctx) {
+        if (ctx.getChildCount() !=  0 ) {
+            TACHelper.getInstance().getLastLevel().getSigns().add(ctx.getChild(0).getText());            
         }
-        return visitAllChildren(arg0);
-        // return super.visitExp(arg0);
+        return visitAllChildren(ctx);
+        // return super.visitExp(ctx);
     }
 
     @Override
-    public String visitTerm(TermContext arg0) {
-        auxTemporal(arg0);
+    public String visitTerm(TermContext ctx) {
+        auxTemporal(ctx);
         return "";
     }
 
     @Override
-    public String visitT(TContext arg0) {
+    public String visitT(TContext ctx) {
 
-        if (arg0.getChildCount() !=  0 ) {
-            TACHelper.getInstance().getLastLevel().getSigns().add(arg0.getChild(0).getText());            
-            return visitAllChildren(arg0);
+        if (ctx.getChildCount() !=  0 ) {
+            TACHelper.getInstance().getLastLevel().getSigns().add(ctx.getChild(0).getText());            
+            return visitAllChildren(ctx);
         }
         return "";
     }  
+
+    @Override
+    public String visitComparadores(ComparadoresContext ctx) {
+        if (ctx.getChildCount() !=  0 ) {
+            TACHelper.getInstance().getLastLevel().getSigns().add(ctx.getChild(0).getText());            
+            return visitAllChildren(ctx);
+        }
+        return "";
+    }
 
     @Override
     public String visitFactor(FactorContext ctx) {
@@ -201,21 +173,33 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     }
 
     @Override
+    public String visitCond(CondContext ctx) {
+        auxTemporal(ctx);
+        return "";
+    }
+
+    @Override
     public String visitCondicional_if(Condicional_ifContext ctx) {
         
-        String startLabel = TACHelper.getInstance().getNextLabel();
-        // String endLabel = TACHelper.getInstance().getNextLabel();
+        String firstLabel = TACHelper.getInstance().getNextLabel();
+        String secondLabel = TACHelper.getInstance().getNextLabel();
+
         System.out.println(ctx.getText());
 
         System.out.println(ctx.cond().getChildCount());
 
         visit(ctx.cond());
 
-        TACHelper.getInstance().writeTAC("IFNJMP " + TACHelper.getInstance().getCurrentTempVariable() + ", " + startLabel);
-
+        TACHelper.getInstance().writeTAC("if (" + TACHelper.getInstance().getCurrentTempVariable() + ") goto " + firstLabel);
+        if (ctx.condicional_else().bloque() != null){
+            visit(ctx.condicional_else().bloque());
+        }else if (ctx.condicional_else().condicional_if() != null){
+            visit(ctx.condicional_else().condicional_if());
+        }
+        TACHelper.getInstance().writeTAC("goto " + secondLabel);
+        TACHelper.getInstance().writeTAC(firstLabel);
         visit(ctx.bloque());
-
-        TACHelper.getInstance().writeTAC("LABEL " + startLabel);
+        TACHelper.getInstance().writeTAC(secondLabel);
 
         return "";
     }
@@ -265,7 +249,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 
     public void auxTemporal(RuleContext ctx) {
 
-        System.out.println("Entre al AuxTemporal");
+       System.out.println("Entre al AuxTemporal");
 
         if(ctx.getChild(1).getChildCount() > 0) {
 
