@@ -88,14 +88,14 @@ declaracion_concat: COM VAR declaracion_concat
             ;
 //  a = 10;
 // int a = 10;
-asignacion: VAR IGU e
-            | tipo_var VAR IGU e 
+asignacion: tipo_var VAR IGU e
+            | VAR IGU e 
             | 
             ;
 // int a;
 // int a = 10, b = 10;
 
-// int a = 10, b = 10, c;
+// int a = 1 + 2, b = 1;
 concatenacion: tipo_var VAR concatenacion
             | tipo_var VAR IGU e concatenacion
             | COM VAR IGU e concatenacion
@@ -201,6 +201,8 @@ comparadores : GT
              | NEQ
              ;
 
+
+/// 7 + 6 * 3
 e: term exp; // nivel 0
 
 exp: SUMA e // nivel 1

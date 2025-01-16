@@ -1,1 +1,2 @@
-int a, b = 2, c;
+int a = 1 + 2;
+int b = 3 + a;

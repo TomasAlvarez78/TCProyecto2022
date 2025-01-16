@@ -41,8 +41,8 @@ public class App {
         
         // Conectamos el visitor
         // System.out.println("Inicio Visitor");
-        // miVisitor visitor = new miVisitor();
-        // visitor.visit(tree);
+        miVisitor visitor = new miVisitor();
+        visitor.visit(tree);
         // System.out.println(visitor);        
         // System.out.println("Final Visitor");
         // System.out.println(visitor.getErrorNodes());

@@ -67,7 +67,6 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         System.out.println(currentLevel.getFactors().size());
 
         if (currentLevel.getFactors().size() > 1){
-           
             auxTemporal(ctx);
         }else{
 
@@ -91,40 +90,29 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     public String visitConcatenacion(ConcatenacionContext ctx) {
         // TODO Auto-generated method stub
         
+        System.out.println("VISITOR CONCATENACION");
         System.out.println(ctx.getText());
-        
-        return super.visitConcatenacion(ctx);
 
+        String id = ctx.VAR().getText();
 
+        TACLevel currentLevel = TACHelper.getInstance().addLevel();
 
-        // System.out.println("VISITOR CONCATENACION");
+        visit(ctx.e());
 
-        // String id = ctx.VAR().getText();
+        System.out.println(currentLevel.getFactors().size());
 
-        // TACLevel currentLevel = TACHelper.getInstance().addLevel();
+        if (currentLevel.getFactors().size() > 1){
+            auxTemporal(ctx);
+        }else{
+            TACHelper.getInstance().writeTAC(id + " = " + currentLevel.getFactors().get(0));
+            TACHelper.getInstance().removeLastLevel();
+        }
 
-        // visit(ctx.e());
+        if(ctx.concatenacion() != null){
+            visit(ctx.concatenacion());
+        }
 
-        // System.out.println(currentLevel.getFactors().size());
-
-        // if (currentLevel.getFactors().size() > 1){
-           
-        //     auxTemporal(ctx);
-        // }else{
-
-        //     TACHelper.getInstance().writeTAC(id + " = " + currentLevel.getFactors().get(0));
-        //     TACHelper.getInstance().removeLastLevel();
-        // }
-
-        // System.out.println(ctx.concatenacion_concat());
-
-        // if (ctx.concatenacion_concat() == null){
-        //     System.out.println("Existe un asignacion dentro");
-        //     return "";
-        // }
-
-
-        // return "";
+        return "";
 
     }
 
@@ -143,6 +131,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         // TACLevel currentLevel = TACHelper.getInstance().addLevel();
 
         String tmp = TACHelper.getInstance().getNextTempVariable();
+
         TACHelper.getInstance().writeTAC(tmp + " = " + id1 + " " + ctx.comparadores().getText() + " " + id2);
 
         // TACHelper.getInstance().writeTAC();
@@ -237,8 +226,6 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     public String visitIncremento(IncrementoContext ctx) {
         // TODO Auto-generated method stub
 
-        // post_pre_incremento
-
         String id = ctx.VAR().getText();
 
         if(ctx.SUMA() != null){
@@ -279,8 +266,9 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     public void auxTemporal(RuleContext ctx) {
 
         System.out.println("Entre al AuxTemporal");
-        System.out.println(ctx.getText());
+
         if(ctx.getChild(1).getChildCount() > 0) {
+
             TACLevel currentLevel = TACHelper.getInstance().addLevel();
 
             System.out.println(variablesCheckear.toString());
@@ -306,7 +294,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
                 nextLevel.getFactors().add(levelResult);
             }
         }else{
-            // visitAllChildren(ctx);
+            visitAllChildren(ctx);
         }
     }
 }

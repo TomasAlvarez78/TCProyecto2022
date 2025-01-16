@@ -21,8 +21,6 @@ import compiladores.Clases.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.naming.Context;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import net.objecthunter.exp4j.Expression;
@@ -109,6 +107,8 @@ public class miListener extends compiladoresBaseListener {
 
         System.out.println("Asignacion");
 
+        System.out.println(ctxAsignacion.getText());
+
         varAux = ctxAsignacion.VAR().getText();
         
         if (ctxAsignacion.tipo_var() != null) {
@@ -171,8 +171,7 @@ public class miListener extends compiladoresBaseListener {
 
             ArrayList<String> list = new ArrayList<String>();
 
-            if (ctxAsignacion.e().term().factor().BOOLEANO() == null
-                    && ctxAsignacion.e().term().factor().VAR() == null) {
+            if (ctxAsignacion.e().term().factor().BOOLEANO() == null && ctxAsignacion.e().term().factor().VAR() == null) {
                 System.out.println(ctxAsignacion.e().getText());
                 list = calcularResultado(ctxAsignacion.e().getText());
                 varActual = ID.TipoDato.valueOf(list.get(0));
@@ -202,6 +201,7 @@ public class miListener extends compiladoresBaseListener {
 
                         if (varDerecha.getValor() != null) {
 
+                            // ARREGLAR SUMA - DECLARA VALOR DE VARTABLA CON VARDERECHA, NO SUMA
                             varTabla.setValor(varDerecha.getValor());
                             varDerecha.setUsada(true);
                             this.TablaSimbolos.asignacionId(varTabla);

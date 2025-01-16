@@ -1,8 +1,21 @@
 1. Ultimos cambios:
-    a. fix sobre asignacion, ahora es concatenable | falta arreglar Listener sobre asignacion concatenada 
-    ex. `int a = 1, b = 2` 
+    a. Redifinicion de declaracion y asignacion.
+    * Listener con declaracion, asignacion OK
+    * concatenacion OK
+    Para las declaraciones compuesta de declaracion + asignacion
+    ex. `int a = 2, b = 2` 
 
     b. Se agrego la incrementacion y decrementacion ( se separo post_pre_incrementacion ) en reglas diferentes, listener y visitor hecho
+
+    c. Esto rompe
+    
+    ```
+        int a = 1 + 2;
+        int b = 3 + a;
+    ```
+
+    En el listener, esto se rompe, ejecutando 3 veces asignacion ?
+    Parece ser por la regla de compiladores.g4 -> asignacion
 
 2. TODO:
     a. cambiar sintaxis de TAC if
@@ -40,5 +53,7 @@
         # End of Loop
         L2:
     ```
-
-test
+    Validar caso en listener: no lanza error:
+        ```
+            int = 10, b - 10;
+        ``` 
