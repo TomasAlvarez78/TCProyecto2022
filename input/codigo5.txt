@@ -1,9 +1,8 @@
-int a = 1 + 2;
-int b = 3;
-b = 4;
+for(int i = 5;i > 0; --i){
+    int x = 1;
+}
+i++;
 
-if (a > 4) {
-    int w = 5;
-}else if (a < 4){
-    int z = 3;
+for(int i = 0;i < 5; i++){
+    int x = 1;
 }

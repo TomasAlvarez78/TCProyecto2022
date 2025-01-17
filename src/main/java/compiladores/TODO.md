@@ -1,14 +1,13 @@
 1. Ultimos cambios:
-    a. Redifinicion de declaracion y asignacion.
-    * Listener con declaracion, asignacion OK
-    * concatenacion OK
-    Para las declaraciones compuesta de declaracion + asignacion
-    ex. `int a = 2, b = 2` 
+    a. Se agrego el if y else - Funciona
+    b. Se agrego el ciclo for - Funciona
 
-    b. Se agrego la incrementacion y decrementacion ( se separo post_pre_incrementacion ) en reglas diferentes, listener y visitor hecho
+2. Arreglar a futuro
+    a. La tabla de simbolos, no es necesario que guarde el valor, ni lo calcule.
+        Pero que si indique si esta inicializada, para saber si puede ser usada.
+        Esto requiere de modificar gran parte del listener
 
-    c. Esto rompe
-    
+    b. Esto rompe
     ```
         int a = 1 + 2;
         int b = 3 + a;
@@ -18,26 +17,7 @@
     Parece ser por la regla de compiladores.g4 -> asignacion
 
 2. TODO:
-    a. cambiar sintaxis de TAC if
-    ex.
-        ```
-            if ( condition is true ) goto L!
-            TAC for else
-            goto L2
-            L1: TAC for if
-            L2:
-        ```
-        ```
-        t1 = 4 + 3 
-        t2 = a > t1   
-        if t2 goto L1   
-            codigo de else sin identar
-            goto L2  // else          
-        L1:                 
-            w = 5 // codigo de then / true
-        L2:   
-        ```
-
+    
     a. ciclo for - visitor TAC
 
     ejemplos de TAC:
@@ -64,6 +44,6 @@
         L2:
     ```
     Validar caso en listener: no lanza error:
-        ```
-            int = 10, b - 10;
-        ``` 
+    ```
+        int = 10, b - 10;
+    ``` 

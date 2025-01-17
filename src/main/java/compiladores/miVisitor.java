@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.stringtemplate.v4.compiler.CodeGenerator.conditional_return;
 
 import compiladores.compiladoresParser.AsignacionContext;
 import compiladores.compiladoresParser.BloqueContext;
@@ -184,25 +185,26 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         String firstLabel = TACHelper.getInstance().getNextLabel();
         String secondLabel = TACHelper.getInstance().getNextLabel();
 
-        System.out.println(ctx.getText());
+        // System.out.println(ctx.getText());
 
-        System.out.println(ctx.cond().getChildCount());
+        // System.out.println(ctx.cond().getChildCount());
 
         visit(ctx.cond());
 
-        TACHelper.getInstance().writeTAC("if (" + TACHelper.getInstance().getCurrentTempVariable() + ") goto " + firstLabel);
+        TACHelper.getInstance().writeTAC("if " + TACHelper.getInstance().getCurrentTempVariable() + " goto " + firstLabel);
         if (ctx.condicional_else().bloque() != null){
             visit(ctx.condicional_else().bloque());
         }else if (ctx.condicional_else().condicional_if() != null){
             visit(ctx.condicional_else().condicional_if());
         }
         TACHelper.getInstance().writeTAC("goto " + secondLabel);
-        TACHelper.getInstance().writeTAC(firstLabel);
+        TACHelper.getInstance().writeTAC(firstLabel + ":");
         visit(ctx.bloque());
-        TACHelper.getInstance().writeTAC(secondLabel);
+        TACHelper.getInstance().writeTAC(secondLabel + ":");
 
         return "";
     }
+
 
     
 
@@ -227,9 +229,9 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 
         String id = ctx.VAR().getText();
 
-        if(ctx.SUMA() != null){
+        if(ctx.SUMA(0) != null){
             TACHelper.getInstance().writeTAC(id + " = " + id +  " + 1");
-        }else if (ctx.RESTA() != null){
+        }else if (ctx.RESTA(0) != null){
             TACHelper.getInstance().writeTAC(id + " = " + id +  " - 1");
         }
 
@@ -242,9 +244,35 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         
         System.out.println("Entre a un bucleFor");
 
+        String forLabel = TACHelper.getInstance().getNextLabel();
+        String outLabel = TACHelper.getInstance().getNextLabel();
+
+        visit(ctx.asignacion());
+
+        TACHelper.getInstance().writeTAC("goto " + forLabel);
+        TACHelper.getInstance().writeTAC(forLabel + ":");
+        
+        visit(ctx.cond());
+
+        TACHelper.getInstance().writeTAC("if " + TACHelper.getInstance().getCurrentTempVariable() + " == false goto " + outLabel);
+
+        if(ctx.decremento() != null){
+            visit(ctx.decremento());
+        }
+
+        visit(ctx.bloque());
+
+        if(ctx.incremento() != null){
+            visit(ctx.incremento());
+        }
+
+        TACHelper.getInstance().writeTAC("goto " + forLabel);
+
+        TACHelper.getInstance().writeTAC(outLabel + ":");
+
         System.out.println("Sali de un bucleFor");
 
-        return super.visitBucle_for(ctx);
+        return "";
     }
 
     public void auxTemporal(RuleContext ctx) {

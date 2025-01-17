@@ -4,6 +4,7 @@ package compiladores;
 // import org.antlr.v4.runtime.tree.TerminalNode;
 
 import compiladores.compiladoresParser.BloqueContext;
+import compiladores.compiladoresParser.Bucle_forContext;
 import compiladores.compiladoresParser.ConcatenacionContext;
 import compiladores.compiladoresParser.CondContext;
 import compiladores.compiladoresParser.Declaracion_concatContext;
@@ -118,6 +119,7 @@ public class miListener extends compiladoresBaseListener {
         AuxAsignacion(ctxAsignacion, varAux);
 
     }
+
 
     public ArrayList<String> calcularResultado(String input) {
 

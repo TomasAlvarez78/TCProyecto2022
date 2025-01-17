@@ -130,7 +130,7 @@ condicional_else: IELSE bloque
                 |
                 ;
 
-bucle_for: IFOR PA ( declaracion PyC cond PyC (incremento | decremento) ) PC bloque;
+bucle_for: IFOR PA asignacion PyC cond PyC (incremento | decremento) PC bloque;
 
 // Declaracion Funcion
 // e 34:4 mismatched input 'return' expecting {'int', 'double', 'while', 'if', 'for', VAR}
