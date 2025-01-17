@@ -1,8 +1,6 @@
-for(int i = 5;i > 0; --i){
-    int x = 1;
-}
-i++;
+int a = 1;
 
-for(int i = 0;i < 5; i++){
-    int x = 1;
+while ( a < 2) {
+    a++;
 }
+

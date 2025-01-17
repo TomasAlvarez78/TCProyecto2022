@@ -10,6 +10,7 @@ import org.stringtemplate.v4.compiler.CodeGenerator.conditional_return;
 import compiladores.compiladoresParser.AsignacionContext;
 import compiladores.compiladoresParser.BloqueContext;
 import compiladores.compiladoresParser.Bucle_forContext;
+import compiladores.compiladoresParser.Bucle_whileContext;
 import compiladores.compiladoresParser.ComparadoresContext;
 import compiladores.compiladoresParser.ConcatenacionContext;
 import compiladores.compiladoresParser.CondContext;
@@ -271,6 +272,32 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         TACHelper.getInstance().writeTAC(outLabel + ":");
 
         System.out.println("Sali de un bucleFor");
+
+        return "";
+    }
+
+    
+
+    @Override
+    public String visitBucle_while(Bucle_whileContext ctx) {
+        // TODO Auto-generated method stub
+        // return super.visitBucle_while(ctx);
+
+        String forLabel = TACHelper.getInstance().getNextLabel();
+        String outLabel = TACHelper.getInstance().getNextLabel();
+
+        TACHelper.getInstance().writeTAC("goto " + forLabel);
+        TACHelper.getInstance().writeTAC(forLabel + ":");
+
+        visit(ctx.cond());
+
+        TACHelper.getInstance().writeTAC("if " + TACHelper.getInstance().getCurrentTempVariable() + " == false goto " + outLabel);
+
+        visit(ctx.bloque());
+
+        TACHelper.getInstance().writeTAC("goto " + forLabel);
+
+        TACHelper.getInstance().writeTAC(outLabel + ":");
 
         return "";
     }

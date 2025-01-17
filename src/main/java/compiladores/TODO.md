@@ -1,6 +1,5 @@
 1. Ultimos cambios:
-    a. Se agrego el if y else - Funciona
-    b. Se agrego el ciclo for - Funciona
+    a. Se declaro el While Loop
 
 2. Arreglar a futuro
     a. La tabla de simbolos, no es necesario que guarde el valor, ni lo calcule.
