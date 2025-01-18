@@ -10,18 +10,40 @@ public abstract class ID {
 
     protected TipoDato tipo;
     protected String nombre, valor;
-    protected Boolean usada;
-    
-    
+    protected Boolean usada, instanciada, esFuncion;
+
+    // protected TipoDato tipo;
+    // protected String nombre;
+    // protected Boolean usada, instanciada, esFuncion;
+
+
     public ID () { 
 
     }
+
 
     public ID (TipoDato tipo, String nombre) { 
         this.tipo = tipo;
         this.nombre = nombre;
         this.usada = false;
-        this.valor = null;
+        this.instanciada = false;
+        this.esFuncion = false;
+    }
+
+    public Boolean getInstanciada() {
+        return instanciada;
+    }
+
+    public void setInstanciada(Boolean instanciada) {
+        this.instanciada = instanciada;
+    }
+
+    public Boolean getEsFuncion() {
+        return esFuncion;
+    }
+
+    public void setEsFuncion(Boolean esFuncion) {
+        this.esFuncion = esFuncion;
     }
 
     public TipoDato getTipo() {
@@ -38,14 +60,6 @@ public abstract class ID {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
-    }
-
-    public String getValor() {
-        return valor;
-    }
-
-    public void setValor(String valor) {
-        this.valor = valor;
     }
 
     public Boolean getUsada() {

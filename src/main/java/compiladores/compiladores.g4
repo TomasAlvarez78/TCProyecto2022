@@ -50,8 +50,8 @@ IWHILE: 'while';
 IIF: 'if';
 IELSE: 'else';
 IFOR: 'for';
+IMAIN: 'main';
 IRETURN: 'return';
-
 
 // Nombre de variables
 VAR: [a-zA-Z]+ ;
@@ -70,7 +70,8 @@ instrucciones : instruccion instrucciones
               |
               ;
 
-instruccion : declaracion PyC
+instruccion : main_function
+            | declaracion PyC
             | asignacion PyC
             | concatenacion PyC
             | incremento PyC
@@ -80,7 +81,11 @@ instruccion : declaracion PyC
             | bucle_for
             | declaracion_funcion
             | asignacion_funcion
+            | llamado_funcion PyC
+            | return_tipo PyC
             ;
+
+main_function: INT IMAIN PA PC bloque;
 
 declaracion: tipo_var VAR declaracion_concat;
 
@@ -132,23 +137,13 @@ condicional_else: IELSE bloque
 
 bucle_for: IFOR PA asignacion PyC cond PyC (incremento | decremento) PC bloque;
 
-// Declaracion Funcion
-// e 34:4 mismatched input 'return' expecting {'int', 'double', 'while', 'if', 'for', VAR}
-// ne 35:0 mismatched input '}' expecting {'int', 'double', 'while', 'if', 'for', 'return', VAR}
-// int nombre (int,float,bool);
-
 declaracion_funcion: tipo_var VAR PA declaracion_argumentos PC PyC;
 
-declaracion_argumentos: tipo_var concatenacion_argumentos_declaracion;
+declaracion_argumentos: tipo_var VAR 
+                        | tipo_var VAR COM declaracion_argumentos
+                        ;
 
-concatenacion_argumentos_declaracion: COM declaracion_argumentos
-                                    | 
-                                    ;
-
-// Asignacion funcion
-// int nombre (int i,float x,bool z){   bloque   }
-
-asignacion_funcion: tipo_var VAR PA asignacion_argumentos PC bloque_funcion;
+asignacion_funcion: tipo_var VAR PA asignacion_argumentos PC bloque;
 
 asignacion_argumentos: INT VAR concatenacion_argumentos_asignacion 
                                  | DOUBLE VAR concatenacion_argumentos_asignacion 
@@ -160,19 +155,7 @@ concatenacion_argumentos_asignacion: COM asignacion_argumentos
               |
               ;
 
-bloque_funcion: LA instrucciones_funcion LC;
-
-instrucciones_funcion: instruccion_funcion instrucciones_funcion
-                     |
-                     ;
-
-instruccion_funcion : declaracion PyC
-            | asignacion PyC
-            | bucle_while 
-            | condicional_if
-            | bucle_for
-            | return_tipo PyC
-            ;
+llamado_funcion: VAR PA VAR PC;
 
 return_tipo: IRETURN VAR
            | IRETURN factor

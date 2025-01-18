@@ -1,16 +1,19 @@
 package compiladores;
 
+import compiladores.compiladoresParser.Asignacion_funcionContext;
+
 // import org.antlr.v4.runtime.ParserRuleContext;
 // import org.antlr.v4.runtime.tree.TerminalNode;
 
 import compiladores.compiladoresParser.BloqueContext;
-import compiladores.compiladoresParser.Bucle_forContext;
 import compiladores.compiladoresParser.ConcatenacionContext;
 import compiladores.compiladoresParser.CondContext;
 import compiladores.compiladoresParser.Declaracion_concatContext;
+import compiladores.compiladoresParser.Declaracion_funcionContext;
 import compiladores.compiladoresParser.DecrementoContext;
 import compiladores.compiladoresParser.EContext;
 import compiladores.compiladoresParser.IncrementoContext;
+import compiladores.compiladoresParser.Main_functionContext;
 import compiladores.compiladoresParser.ProgramaContext;
 
 import java.util.ArrayList;
@@ -32,6 +35,15 @@ public class miListener extends compiladoresBaseListener {
     private boolean showTabla = true;
     private TablaDeSimbolos TablaSimbolos = TablaDeSimbolos.getInstance();
     private ArrayList<ID> noUsadas = new ArrayList<ID>();
+
+    
+
+    @Override
+    public void enterMain_function(Main_functionContext ctx) {
+        // TODO Auto-generated method stub
+        System.out.println("Entre en el main function");
+        super.enterMain_function(ctx);
+    }
 
     @Override
     public void exitCond(CondContext ctx) {
@@ -169,46 +181,33 @@ public class miListener extends compiladoresBaseListener {
 
             Variable varTabla = this.TablaSimbolos.getVariableDeclared(varAux);
 
-            ID.TipoDato varActual = null;
+            ID.TipoDato tipoVarActual = null;
 
             ArrayList<String> list = new ArrayList<String>();
 
             if (ctxAsignacion.e().term().factor().BOOLEANO() == null && ctxAsignacion.e().term().factor().VAR() == null) {
-                System.out.println(ctxAsignacion.e().getText());
+                // Es integer
                 list = calcularResultado(ctxAsignacion.e().getText());
-                varActual = ID.TipoDato.valueOf(list.get(0));
+                tipoVarActual = ID.TipoDato.valueOf(list.get(0));
             }
 
-            // if(ctxAsignacion.e().term().factor().ENTERO() != null){
-
-            // varActual = ID.TipoDato.valueOf("INT");
-
-            // }else if(ctxAsignacion.e().term().factor().DOBLE() != null){
-
-            // varActual = ID.TipoDato.valueOf("DOUBLE");
-
-            // }else
             if (ctxAsignacion.e().term().factor().BOOLEANO() != null) {
-
-                varActual = ID.TipoDato.valueOf("BOOL");
+                // Es boolean
+                tipoVarActual = ID.TipoDato.valueOf("BOOL");
 
             } else if (ctxAsignacion.e().term().factor().VAR() != null) {
-
+                // Es asignacion con variable
                 if (this.TablaSimbolos.isVariableDeclared(ctxAsignacion.e().term().factor().VAR().getText())) {
 
-                    Variable varDerecha = this.TablaSimbolos
-                            .getVariableDeclared(ctxAsignacion.e().term().factor().VAR().getText());
+                    Variable varDerecha = this.TablaSimbolos.getVariableDeclared(ctxAsignacion.e().term().factor().VAR().getText());
 
                     if (varTabla.getTipo() == varDerecha.getTipo()) {
 
-                        if (varDerecha.getValor() != null) {
-
-                            // ARREGLAR SUMA - DECLARA VALOR DE VARTABLA CON VARDERECHA, NO SUMA
-                            varTabla.setValor(varDerecha.getValor());
+                        if (varDerecha.getInstanciada()) {
+                            varTabla.setInstanciada(true);
                             varDerecha.setUsada(true);
                             this.TablaSimbolos.asignacionId(varTabla);
                             this.TablaSimbolos.asignacionId(varDerecha);
-
                         } else {
                             System.out.println("\nError semantico ==> La segunda variable no esta inicializada");
                         }
@@ -221,25 +220,10 @@ public class miListener extends compiladoresBaseListener {
                 return;
             }
 
-            if (varActual != null) {
-                if (varActual == varTabla.getTipo()) {
-
-                    // if(ctxAsignacion.e().term().factor().ENTERO() != null){
-
-                    // varTabla.setValor(list.get(1));
-
-                    // }else if(ctxAsignacion.e().term().factor().DOBLE() != null){
-
-                    // varTabla.setValor(list.get(1));
-
-                    // }else
-                    if (ctxAsignacion.e().term().factor().BOOLEANO() != null) {
-
-                        varTabla.setValor(ctxAsignacion.e().term().factor().BOOLEANO().getText());
-
-                    } else {
-                        varTabla.setValor(list.get(1));
-                    }
+            if (tipoVarActual != null) {
+                if (tipoVarActual == varTabla.getTipo()) {
+                    
+                    varTabla.setInstanciada(true);
                     this.TablaSimbolos.asignacionId(varTabla);
 
                 } else {
@@ -314,9 +298,9 @@ public class miListener extends compiladoresBaseListener {
 
                     if (id.getTipo() == varDerecha.getTipo()) {
 
-                        if (varDerecha.getValor() != null) {
+                        if (varDerecha.getInstanciada()) {
 
-                            id.setValor(varDerecha.getValor());
+                            // id.setValor(varDerecha.getValor());
                             varDerecha.setUsada(true);
                             this.TablaSimbolos.addId(id);
                             this.TablaSimbolos.asignacionId(varDerecha);
@@ -336,7 +320,7 @@ public class miListener extends compiladoresBaseListener {
                     return;
                 }
                 if (tipoValor != ""){
-                    id.setValor(valores.get(i));
+                    id.setInstanciada(true);
                 }
                 this.TablaSimbolos.addId(id);
             }
@@ -404,11 +388,9 @@ public class miListener extends compiladoresBaseListener {
 
         // Guardo la variable en la Tabla de Simbolos si no esta declarada
         if (this.TablaSimbolos.isVariableDeclared(idName)) {
-            // if ()
             ID id = this.TablaSimbolos.getVariableDeclared(idName);
-            if (id.getTipo() == ID.TipoDato.valueOf("INT") || id.getTipo() == ID.TipoDato.valueOf("DOUBLE")) {
-                int tmpResult = Integer.valueOf(id.getValor()) - 1;
-                id.setValor(String.valueOf(tmpResult));
+            if ( (id.getTipo() == ID.TipoDato.valueOf("INT") || id.getTipo() == ID.TipoDato.valueOf("DOUBLE")) && id.getInstanciada()) {
+                id.setUsada(true);
                 this.TablaSimbolos.setUsedId(idName);
             } else {
                 System.out.println("\n Error semantico ==> La variable " + id.getNombre() + " no es del tipo correcto");
@@ -429,11 +411,9 @@ public class miListener extends compiladoresBaseListener {
 
         // Guardo la variable en la Tabla de Simbolos si no esta declarada
         if (this.TablaSimbolos.isVariableDeclared(idName)) {
-            // if ()
             ID id = this.TablaSimbolos.getVariableDeclared(idName);
-            if (id.getTipo() == ID.TipoDato.valueOf("INT") || id.getTipo() == ID.TipoDato.valueOf("DOUBLE")) {
-                int tmpResult = Integer.valueOf(id.getValor()) + 1;
-                id.setValor(String.valueOf(tmpResult));
+            if ( (id.getTipo() == ID.TipoDato.valueOf("INT") || id.getTipo() == ID.TipoDato.valueOf("DOUBLE")) && id.getInstanciada()) {
+                id.setUsada(true);
                 this.TablaSimbolos.setUsedId(idName);
             } else {
                 System.out.println("\n Error semantico ==> La variable " + id.getNombre() + " no es del tipo correcto");
@@ -443,6 +423,20 @@ public class miListener extends compiladoresBaseListener {
         }
 
         super.exitIncremento(ctx);
+    }
+
+    @Override
+    public void exitDeclaracion_funcion(Declaracion_funcionContext ctx) {
+        // TODO Auto-generated method stub
+        System.out.println("Entre a declaracionFuncion");
+        super.exitDeclaracion_funcion(ctx);
+    }
+
+    @Override
+    public void exitAsignacion_funcion(Asignacion_funcionContext ctx) {
+        // TODO Auto-generated method stub
+        System.out.println("Entre a asignacionFuncion");
+        super.exitAsignacion_funcion(ctx);
     }
 
     @Override

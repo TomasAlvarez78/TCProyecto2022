@@ -14,16 +14,26 @@ public class Variable extends ID {
     public String toString(){
         String string = "";
 
-        string = this.getTipo() + " " + this.getNombre();
-        if(this.getValor() != null){
-            string += " = " + this.getValor();  
+        if(this.getEsFuncion()){
+            string += "FUN ";  
+        }else{
+            string += "VAR ";  
         }
+
+        string += this.getTipo() + " " + this.getNombre();
 
         if(this.getUsada()){
             string += " ( usada ) ";  
         }else{
             string += " ( no usada ) ";  
         }
+
+        if(this.getInstanciada()){
+            string += " ( instanciada ) ";  
+        }else{
+            string += " ( no instanciada ) ";  
+        }
+
 
         return string;
     }
