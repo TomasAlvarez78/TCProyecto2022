@@ -79,15 +79,10 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         return "";
     }
 
-    
-    // Redeclarar
     @Override
     public String visitConcatenacion(ConcatenacionContext ctx) {
         // TODO Auto-generated method stub
         
-        // System.out.println("VISITOR CONCATENACION");
-        // System.out.println(ctx.getText());
-
         String id = ctx.VAR().getText();
 
         TACLevel currentLevel = TACHelper.getInstance().addLevel();

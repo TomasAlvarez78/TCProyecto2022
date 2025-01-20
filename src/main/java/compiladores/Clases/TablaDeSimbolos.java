@@ -9,6 +9,7 @@ public class TablaDeSimbolos {
     private LinkedList<HashMap<String, ID>> tablaSimbolos;
     private LinkedList<HashMap<String, ID>> historialTablaSimbolos;
     private static TablaDeSimbolos instance;
+    private int ctxNumber;
     
     // Es un singleton    
     public static TablaDeSimbolos getInstance() {
@@ -21,6 +22,7 @@ public class TablaDeSimbolos {
         // Inicializa la tabla de simbolos actual y la tabla de simbolos completa
         this.tablaSimbolos = new LinkedList<HashMap<String, ID>>();
         this.historialTablaSimbolos = new LinkedList<HashMap<String, ID>>(); 
+        this.ctxNumber = 1;
         // Agrega el contexto inicial - global
         this.addContext();
     }
@@ -30,6 +32,7 @@ public class TablaDeSimbolos {
         HashMap<String, ID> context = new HashMap<String,ID>();       
         this.tablaSimbolos.add(context);
         this.historialTablaSimbolos.add(context);
+        this.ctxNumber++;
     }
 
     public HashMap<String,ID> getLastContext() {
@@ -40,6 +43,7 @@ public class TablaDeSimbolos {
     public void removeContext() {
         // Elimina un context
         this.tablaSimbolos.removeLast();
+        this.ctxNumber--;
     }
 
     public void addId(final ID id) {
@@ -127,6 +131,10 @@ public class TablaDeSimbolos {
                 System.out.println("}");
             }       
         }
+    }
+
+    public int getCtxNumber() {
+        return ctxNumber;
     }
     
 }

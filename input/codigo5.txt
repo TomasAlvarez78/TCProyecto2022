@@ -1,3 +1,14 @@
-int i;
-i = 5;
-int a = 4;
+int sumar(int x);
+int resta();
+
+int sumar(int x, int y){
+    int a = 1;
+    x = a;
+    resta();
+    return x;
+}
+
+int resta(){
+    int ab = 1;
+    return ab;
+}

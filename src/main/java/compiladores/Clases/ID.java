@@ -11,6 +11,7 @@ public abstract class ID {
     protected TipoDato tipo;
     protected String nombre, valor;
     protected Boolean usada, instanciada, esFuncion;
+    protected int ctx;
 
     // protected TipoDato tipo;
     // protected String nombre;
@@ -28,6 +29,7 @@ public abstract class ID {
         this.usada = false;
         this.instanciada = false;
         this.esFuncion = false;
+        this.ctx = -1;
     }
 
     public Boolean getInstanciada() {
@@ -68,6 +70,14 @@ public abstract class ID {
 
     public void setUsada(Boolean usada) {
         this.usada = usada;
+    }
+
+    public int getCtx() {
+        return ctx;
+    }
+
+    public void setCtx(int ctx) {
+        this.ctx = ctx;
     }
 
 }

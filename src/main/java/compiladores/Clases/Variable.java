@@ -3,10 +3,9 @@ package compiladores.Clases;
 public class Variable extends ID {
     
     public Variable(){
-
     }
 
-    public Variable(ID.TipoDato tipo, String nombre){
+    public Variable(ID.TipoDato tipo, String nombre, int ctx){
         super(tipo, nombre);
     }
 
@@ -37,4 +36,5 @@ public class Variable extends ID {
 
         return string;
     }
+
 }

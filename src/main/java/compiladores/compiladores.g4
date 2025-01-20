@@ -79,7 +79,7 @@ instruccion : main_function
             | bucle_while 
             | condicional_if
             | bucle_for
-            | declaracion_funcion
+            | declaracion_funcion PyC
             | asignacion_funcion
             | llamado_funcion PyC
             | return_tipo PyC
@@ -92,30 +92,18 @@ declaracion: tipo_var VAR declaracion_concat;
 declaracion_concat: COM VAR declaracion_concat 
             |
             ;
-//  a = 10;
-// int a = 10;
+
 asignacion: tipo_var VAR IGU e
             | VAR IGU e 
             | 
             ;
-// int a;
-// int a = 10, b = 10;
 
-// int a = 1 + 2, b = 1;
 concatenacion: tipo_var VAR concatenacion
             | tipo_var VAR IGU e concatenacion
             | COM VAR IGU e concatenacion
             | COM VAR IGU e
             | COM VAR
             ;
-            
-
-// concatenacion_concat: IGU e concatenacion_concat
-//             | COM VAR IGU e concatenacion_concat
-//             | COM VAR concatenacion_concat
-//             |
-//             ;
-// concatenacion:  declaracion asignacion declaracion_concat;
 
 bloque: LA instrucciones LC;
 
@@ -137,25 +125,23 @@ condicional_else: IELSE bloque
 
 bucle_for: IFOR PA asignacion PyC cond PyC (incremento | decremento) PC bloque;
 
-declaracion_funcion: tipo_var VAR PA declaracion_argumentos PC PyC;
+declaracion_funcion: tipo_var VAR PA declaracion_argumentos PC;
 
 declaracion_argumentos: tipo_var VAR 
                         | tipo_var VAR COM declaracion_argumentos
+                        |
                         ;
 
-asignacion_funcion: tipo_var VAR PA asignacion_argumentos PC bloque;
+asignacion_funcion: tipo_var VAR PA asignacion_argumentos? PC bloque;
 
-asignacion_argumentos: INT VAR concatenacion_argumentos_asignacion 
-                                 | DOUBLE VAR concatenacion_argumentos_asignacion 
-                                 | INT asignacion concatenacion_argumentos_asignacion 
-                                 | DOUBLE asignacion concatenacion_argumentos_asignacion 
-                                 ;
+asignacion_argumentos: tipo_var VAR
+                    | tipo_var VAR IGU e
+                    | tipo_var VAR COM asignacion_argumentos
+                    | tipo_var VAR IGU e COM asignacion_argumentos
+                    ;
+                                     
 
-concatenacion_argumentos_asignacion: COM asignacion_argumentos
-              |
-              ;
-
-llamado_funcion: VAR PA VAR PC;
+llamado_funcion: VAR PA PC;
 
 return_tipo: IRETURN VAR
            | IRETURN factor
@@ -164,7 +150,6 @@ return_tipo: IRETURN VAR
 
 tipo_var: INT
         | DOUBLE
-        | BOOL
         ;
 
 incremento: VAR SUMA SUMA
@@ -189,8 +174,6 @@ comparadores : GT
              | NEQ
              ;
 
-
-/// 7 + 6 * 3
 e: term exp; // nivel 0
 
 exp: SUMA e // nivel 1

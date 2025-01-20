@@ -1,5 +1,6 @@
 package compiladores;
 
+import compiladores.compiladoresParser.Asignacion_argumentosContext;
 import compiladores.compiladoresParser.Asignacion_funcionContext;
 
 // import org.antlr.v4.runtime.ParserRuleContext;
@@ -13,6 +14,7 @@ import compiladores.compiladoresParser.Declaracion_funcionContext;
 import compiladores.compiladoresParser.DecrementoContext;
 import compiladores.compiladoresParser.EContext;
 import compiladores.compiladoresParser.IncrementoContext;
+import compiladores.compiladoresParser.Llamado_funcionContext;
 import compiladores.compiladoresParser.Main_functionContext;
 import compiladores.compiladoresParser.ProgramaContext;
 
@@ -72,13 +74,13 @@ public class miListener extends compiladoresBaseListener {
 
     @Override
     public void enterBloque(BloqueContext ctx) {
-
-        // System.out.println("\n =====> Entre a un contexto");
-
-        // Agrega un contexto
-        this.TablaSimbolos.addContext();
-
+        // Agrega un contexto, solo si no es asignacion funcion ( genera contexto en argumentos )
+        if(!(ctx.getParent() instanceof compiladoresParser.Asignacion_funcionContext)){
+            this.TablaSimbolos.addContext();
+        }      
     }
+
+
 
     // Solo genera la variable en la TS si es una declaracion simple
     // ex. int a;
@@ -98,7 +100,7 @@ public class miListener extends compiladoresBaseListener {
 
         if (ctxConcat.getText() != "") {
             do {
-                ID id = new Variable(varActual, ctxConcat.VAR().getText());
+                ID id = new Variable(varActual, ctxConcat.VAR().getText(),this.TablaSimbolos.getCtxNumber());
                 if (!this.TablaSimbolos.isVariableDeclared(id.getNombre())) {
                     this.TablaSimbolos.addId(id);
                     // System.out.println(ctxConcat.asignacion().getText());
@@ -134,7 +136,6 @@ public class miListener extends compiladoresBaseListener {
 
 
     public ArrayList<String> calcularResultado(String input) {
-
         Expression exp = new ExpressionBuilder(input).build();
 
         ArrayList<String> list = new ArrayList<>();
@@ -156,23 +157,32 @@ public class miListener extends compiladoresBaseListener {
 
     public void declararVariable(ParserRuleContext ctx) {
         ID id = null;
+
         // Si es declaracion o asignacion, extraigo el tipo_var y creo la variable
         if (ctx instanceof compiladoresParser.DeclaracionContext) {
             compiladoresParser.DeclaracionContext declaracionCtx = (compiladoresParser.DeclaracionContext) ctx;
             ID.TipoDato varActual = ID.TipoDato.valueOf(declaracionCtx.tipo_var().getText().toUpperCase());
-            id = new Variable(varActual, declaracionCtx.VAR().getText());
+            id = new Variable(varActual, declaracionCtx.VAR().getText(),this.TablaSimbolos.getCtxNumber());
         } else if (ctx instanceof compiladoresParser.AsignacionContext) {
             compiladoresParser.AsignacionContext asignacionCtx = (compiladoresParser.AsignacionContext) ctx;
             ID.TipoDato varActual = ID.TipoDato.valueOf(asignacionCtx.tipo_var().getText().toUpperCase());
-            id = new Variable(varActual, asignacionCtx.VAR().getText());
+            id = new Variable(varActual, asignacionCtx.VAR().getText(),this.TablaSimbolos.getCtxNumber());
+        } else if (ctx instanceof compiladoresParser.Declaracion_funcionContext) {
+            compiladoresParser.Declaracion_funcionContext asignacionCtx = (compiladoresParser.Declaracion_funcionContext) ctx;
+            ID.TipoDato varActual = ID.TipoDato.valueOf(asignacionCtx.tipo_var().getText().toUpperCase());
+            id = new Variable(varActual, asignacionCtx.VAR().getText(),this.TablaSimbolos.getCtxNumber());
+            id.setEsFuncion(true);
+        } else if (ctx instanceof compiladoresParser.Asignacion_argumentosContext) {
+            compiladoresParser.Asignacion_argumentosContext asignacionCtx = (compiladoresParser.Asignacion_argumentosContext) ctx;
+            ID.TipoDato varActual = ID.TipoDato.valueOf(asignacionCtx.tipo_var().getText().toUpperCase());
+            id = new Variable(varActual, asignacionCtx.VAR().getText(),this.TablaSimbolos.getCtxNumber());
         } else {
             System.out.println("Tipo de contexto no reconocido");
         }
 
         if (!this.TablaSimbolos.isVariableDeclared(id.getNombre())) {
             this.TablaSimbolos.addId(id);
-        } else {
-            System.out.println("\n Error semantico ==> La variable " + id.getNombre() + " ya existe");
+        } else {$.out.println("\n Error semantico ==> La variable " + id.getNombre() + " ya existe");
         }
     }
 
@@ -285,7 +295,7 @@ public class miListener extends compiladoresBaseListener {
 
         for (int i = 0; i < variables.size(); i++) {
 
-            ID id = new Variable(tipoVar, variables.get(i));
+            ID id = new Variable(tipoVar, variables.get(i),this.TablaSimbolos.getCtxNumber());
 
             String tipoValor = "";
 
@@ -425,18 +435,58 @@ public class miListener extends compiladoresBaseListener {
         super.exitIncremento(ctx);
     }
 
+    
     @Override
     public void exitDeclaracion_funcion(Declaracion_funcionContext ctx) {
         // TODO Auto-generated method stub
-        System.out.println("Entre a declaracionFuncion");
+        declararVariable(ctx);
         super.exitDeclaracion_funcion(ctx);
     }
-
+    
+    @Override
+    public void enterAsignacion_funcion(Asignacion_funcionContext ctx) {
+        // TODO Auto-generated method stub
+        this.TablaSimbolos.addContext();
+        super.enterAsignacion_funcion(ctx);
+    }
+    
     @Override
     public void exitAsignacion_funcion(Asignacion_funcionContext ctx) {
         // TODO Auto-generated method stub
         System.out.println("Entre a asignacionFuncion");
+
+        String idName = ctx.VAR().getText();
+
+        if(this.TablaSimbolos.isVariableDeclared(idName)){
+            ID id = this.TablaSimbolos.getVariableDeclared(idName);
+            id.setInstanciada(true);
+            this.TablaSimbolos.asignacionId(id);
+        }
+
         super.exitAsignacion_funcion(ctx);
+    }
+    
+    @Override
+    public void exitAsignacion_argumentos(Asignacion_argumentosContext ctx) {
+        // TODO Auto-generated method stub
+        declararVariable(ctx);        
+        super.exitAsignacion_argumentos(ctx);
+    }
+
+    
+
+    @Override
+    public void exitLlamado_funcion(Llamado_funcionContext ctx) {
+        // TODO Auto-generated method stub
+        String idName = ctx.VAR().getText();
+
+        if(this.TablaSimbolos.isVariableDeclared(idName)){
+            ID id = this.TablaSimbolos.getVariableDeclared(idName);
+            id.setUsada(true);
+            this.TablaSimbolos.asignacionId(id);
+        }
+
+        super.exitLlamado_funcion(ctx);
     }
 
     @Override
