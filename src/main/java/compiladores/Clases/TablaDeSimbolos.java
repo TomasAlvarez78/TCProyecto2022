@@ -3,138 +3,132 @@ package compiladores.Clases;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-
 public class TablaDeSimbolos {
 
-    private LinkedList<HashMap<String, ID>> tablaSimbolos;
-    private LinkedList<HashMap<String, ID>> historialTablaSimbolos;
+    private LinkedList<Contexto> tablaSimbolos;
+    private LinkedList<Contexto> historialTablaSimbolos;
     private static TablaDeSimbolos instance;
-    private int ctxNumber;
-    
-    // Es un singleton    
+    private int ctxCounter;
+
+    // Es un singleton
     public static TablaDeSimbolos getInstance() {
-        if(instance == null)
+        if (instance == null)
             instance = new TablaDeSimbolos();
         return instance;
     }
 
-    public TablaDeSimbolos() {
-        // Inicializa la tabla de simbolos actual y la tabla de simbolos completa
-        this.tablaSimbolos = new LinkedList<HashMap<String, ID>>();
-        this.historialTablaSimbolos = new LinkedList<HashMap<String, ID>>(); 
-        this.ctxNumber = 1;
-        // Agrega el contexto inicial - global
+    private TablaDeSimbolos() {
+        this.tablaSimbolos = new LinkedList<>();
+        this.historialTablaSimbolos = new LinkedList<>();
+        this.ctxCounter = 0;
         this.addContext();
     }
 
+    // Agrega un nuevo contexto
     public void addContext() {
-        // Crea un contexto vacio y lo agrega a las tablas de simbolos
-        HashMap<String, ID> context = new HashMap<String,ID>();       
-        this.tablaSimbolos.add(context);
-        this.historialTablaSimbolos.add(context);
-        this.ctxNumber++;
+        this.ctxCounter++;
+        Contexto nuevoContexto = new Contexto(ctxCounter);
+        this.tablaSimbolos.add(nuevoContexto);
+        this.historialTablaSimbolos.add(nuevoContexto);
     }
 
-    public HashMap<String,ID> getLastContext() {
-        // Devuelve la cantidad de context actuales
-        return this.tablaSimbolos.getLast();
+    public void setCtxCounter(int ctxCounter) {
+        this.ctxCounter = ctxCounter;
     }
 
+    public int getCtxCounter() {
+        return ctxCounter;
+    }
+
+    // Obtiene el último contexto
+    public HashMap<String, ID> getLastContext() {
+        return this.tablaSimbolos.getLast().simbolos;
+    }
+
+    // Elimina el último contexto
     public void removeContext() {
-        // Elimina un context
         this.tablaSimbolos.removeLast();
-        this.ctxNumber--;
     }
 
+    // Agrega un ID al último contexto
     public void addId(final ID id) {
-        // Agrega en el ultimo contexto, un objeto
-        this.tablaSimbolos.getLast().put(id.getNombre(), id);
-        this.historialTablaSimbolos.get(this.historialTablaSimbolos.size() - 1).put(id.getNombre(), id);
+        Contexto ultimoContexto = this.tablaSimbolos.getLast();
+        if (id.getCtx() <= ultimoContexto.numero) {
+            ultimoContexto.simbolos.put(id.getNombre(), id);
+            this.historialTablaSimbolos.getLast().simbolos.put(id.getNombre(), id);
+        } else {
+            throw new IllegalArgumentException("El contexto del ID no coincide con el contexto actual.");
+        }
     }
-    
+
+    // Asigna o reasigna un ID si el contexto cumple la condición
     public Boolean asignacionId(final ID id) {
-        // Busca el id dentro de los contextos, de atras para adelante
-        // y lo reemplaza, se usa para una asignacion o reasignacion de variable
-        for(int i = this.tablaSimbolos.size() - 1; i >= 0; i--) {
-            if(this.tablaSimbolos.get(i).containsKey(id.getNombre())) {
-                this.tablaSimbolos.get(i).replace(id.getNombre(), id);
-                this.historialTablaSimbolos.get(i).replace(id.getNombre(), id);
+        for (int i = this.tablaSimbolos.size() - 1; i >= 0; i--) {
+            Contexto contexto = this.tablaSimbolos.get(i);
+            if (contexto.numero <= id.getCtx() && contexto.simbolos.containsKey(id.getNombre())) {
+                contexto.simbolos.replace(id.getNombre(), id);
+                this.historialTablaSimbolos.getLast().simbolos.replace(id.getNombre(), id);
                 return true;
             }
         }
         return false;
     }
 
-    public boolean isVariableDeclared(final ID id) {
-        // Busca en los contextos de atras para adelante si existe cierta variable que le pasemos
-        for(int i = this.tablaSimbolos.size() - 1; i >= 0; i--) {
-            if (this.tablaSimbolos.get(i).containsKey(id.getNombre())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
+    // Busca si una variable está declarada
     public boolean isVariableDeclared(final String nombre) {
-        // Busca en los contextos de atras para adelante si existe cierta variable con el nombre que le pasemos
-        for(int i = this.tablaSimbolos.size() - 1; i >= 0; i--) {
-            if (this.tablaSimbolos.get(i).containsKey(nombre)) {
+        for (int i = this.tablaSimbolos.size() - 1; i >= 0; i--) {
+            Contexto contexto = this.tablaSimbolos.get(i);
+            if (contexto.numero <= this.ctxCounter && contexto.simbolos.containsKey(nombre)) {
                 return true;
             }
         }
         return false;
     }
 
+    public void setUsedId(final String nombre) {
+        // Marca como usada la variable con el nombre dado, si existe en un contexto válido
+        for (Contexto contexto : this.tablaSimbolos) {
+            for (ID id : contexto.simbolos.values()) {
+                if (id.getNombre().equals(nombre) && id.getCtx() <= contexto.numero) {
+                    id.setUsada(true);
+                }
+            }
+        }
+    }
+
+    // Obtiene una variable si está declarada en un contexto válido
     public Variable getVariableDeclared(final String nombre) {
-        // Busca en los contextos de atras para adelante si existe cierta variable con el nombre que le pasemos
-        for(int i = this.tablaSimbolos.size() - 1; i >= 0; i--) {
-            if (this.tablaSimbolos.get(i).containsKey(nombre)) {
-                return (Variable) this.tablaSimbolos.get(i).get(nombre);
+        for (int i = this.tablaSimbolos.size() - 1; i >= 0; i--) {
+            Contexto contexto = this.tablaSimbolos.get(i);
+            if (contexto.numero <= this.ctxCounter && contexto.simbolos.containsKey(nombre)) {
+                return (Variable) contexto.simbolos.get(nombre);
             }
         }
         return null;
-    }    
-
-    public void setUsedId(final String nombre) {
-        // Declara a cierta variable que su parametro booleano Used true
-        // Si la encuentra
-        for (HashMap<String, ID> contexto : this.tablaSimbolos) {
-        
-        
-            for (ID id : contexto.values()) {
-                if (id.getNombre().equals(nombre))
-                    id.setUsada(true);
-            }
-        }
     }
 
     public void printTable(Boolean complete) {
-        
-        int ctx = 1;
-        System.out.println("\n------TABLA DE SIMBOLOS------");
-        for (HashMap<String, ID> contexto : this.tablaSimbolos) {
-            System.out.println("Contexto: " + ctx++ + " {");
-            for (ID id : contexto.values()) {
+        System.out.println("\n------TABLA DE SÍMBOLOS (ACTUAL)------");
+        for (Contexto contexto : this.tablaSimbolos) {
+            System.out.println("Contexto: " + contexto.numero + " {");
+            for (ID id : contexto.simbolos.values()) {
                 System.out.println("    " + id.toString());
             }
             System.out.println("}");
         }
         
-        if (complete){
-            ctx = 1;
-            System.out.println("\n------HISTORIAL------");
-            for (HashMap<String, ID> contexto : this.historialTablaSimbolos) {
-                System.out.println("Contexto: " + ctx++ + " {");
-                for (ID id : contexto.values()) {
+        if (complete) {
+            System.out.println("\n------HISTORIAL COMPLETO------");
+            for (Contexto contexto : this.historialTablaSimbolos) {
+                System.out.println("Contexto: " + contexto.numero + " {");
+                for (ID id : contexto.simbolos.values()) {
                     System.out.println("    " + id.toString());
                 }
                 System.out.println("}");
-            }       
+            }
         }
     }
 
-    public int getCtxNumber() {
-        return ctxNumber;
-    }
-    
+
+
 }

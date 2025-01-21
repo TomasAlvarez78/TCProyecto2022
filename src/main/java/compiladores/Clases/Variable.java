@@ -6,7 +6,7 @@ public class Variable extends ID {
     }
 
     public Variable(ID.TipoDato tipo, String nombre, int ctx){
-        super(tipo, nombre);
+        super(tipo, nombre,ctx);
     }
 
     @Override
@@ -33,6 +33,7 @@ public class Variable extends ID {
             string += " ( no instanciada ) ";  
         }
 
+        string += " ( contexto: " + this.ctx + " )";
 
         return string;
     }

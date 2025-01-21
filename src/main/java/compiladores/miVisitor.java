@@ -51,7 +51,6 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 
     public String visitAllChildren(RuleContext ctx) {
         for (int i = 0; i < ctx.getChildCount(); i++) {
-            // System.out.println(ctx.getChild(i).getText());
             visit(ctx.getChild(i));
         }
         return "";
@@ -67,7 +66,6 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 
         visit(ctx.e());
 
-        // System.out.println(currentLevel.getFactors().size());
 
         if (currentLevel.getFactors().size() > 1){
             auxTemporal(ctx);
@@ -89,7 +87,6 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 
         visit(ctx.e());
 
-        // System.out.println(currentLevel.getFactors().size());
 
         if (currentLevel.getFactors().size() > 1){
             auxTemporal(ctx);
@@ -163,7 +160,6 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         if (ctx.getChildCount() !=  0 ) {
             TACHelper.getInstance().getLastLevel().getFactors().add(ctx.getText());
             variablesCheckear.add(ctx.getText());
-            // System.out.println(variablesCheckear.toString());
         }
         // return visitAllChildren(ctx);
         return "";
@@ -181,9 +177,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         String firstLabel = TACHelper.getInstance().getNextLabel();
         String secondLabel = TACHelper.getInstance().getNextLabel();
 
-        // System.out.println(ctx.getText());
 
-        // System.out.println(ctx.cond().getChildCount());
 
         visit(ctx.cond());
 
@@ -235,7 +229,6 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     public String visitBucle_for(Bucle_forContext ctx) {
         // TODO Auto-generated method stub
         
-        // System.out.println("Entre a un bucleFor");
 
         String forLabel = TACHelper.getInstance().getNextLabel();
         String outLabel = TACHelper.getInstance().getNextLabel();
@@ -263,7 +256,6 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 
         TACHelper.getInstance().writeTAC(outLabel + ":");
 
-        // System.out.println("Sali de un bucleFor");
 
         return "";
     }
@@ -294,13 +286,11 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     
     public void auxTemporal(RuleContext ctx) {
 
-    //    System.out.println("Entre al AuxTemporal");
 
         if(ctx.getChild(1).getChildCount() > 0) {
 
             TACLevel currentLevel = TACHelper.getInstance().addLevel();
 
-            // System.out.println(variablesCheckear.toString());
 
             visitAllChildren(ctx);
 

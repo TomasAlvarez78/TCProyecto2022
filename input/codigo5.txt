@@ -9,6 +9,6 @@ int sumar(int x, int y){
 }
 
 int resta(){
-    int ab = 1;
-    return ab;
+    int a = 1;
+    return a;
 }

@@ -38,8 +38,6 @@ public class miListener extends compiladoresBaseListener {
     private TablaDeSimbolos TablaSimbolos = TablaDeSimbolos.getInstance();
     private ArrayList<ID> noUsadas = new ArrayList<ID>();
 
-    
-
     @Override
     public void enterMain_function(Main_functionContext ctx) {
         // TODO Auto-generated method stub
@@ -74,13 +72,12 @@ public class miListener extends compiladoresBaseListener {
 
     @Override
     public void enterBloque(BloqueContext ctx) {
-        // Agrega un contexto, solo si no es asignacion funcion ( genera contexto en argumentos )
-        if(!(ctx.getParent() instanceof compiladoresParser.Asignacion_funcionContext)){
+        // Agrega un contexto, solo si no es asignacion funcion ( genera contexto en
+        // argumentos )
+        if (!(ctx.getParent() instanceof compiladoresParser.Asignacion_funcionContext)) {
             this.TablaSimbolos.addContext();
-        }      
+        }
     }
-
-
 
     // Solo genera la variable en la TS si es una declaracion simple
     // ex. int a;
@@ -100,7 +97,7 @@ public class miListener extends compiladoresBaseListener {
 
         if (ctxConcat.getText() != "") {
             do {
-                ID id = new Variable(varActual, ctxConcat.VAR().getText(),this.TablaSimbolos.getCtxNumber());
+                ID id = new Variable(varActual, ctxConcat.VAR().getText(), this.TablaSimbolos.getCtxCounter());
                 if (!this.TablaSimbolos.isVariableDeclared(id.getNombre())) {
                     this.TablaSimbolos.addId(id);
                     // System.out.println(ctxConcat.asignacion().getText());
@@ -125,7 +122,7 @@ public class miListener extends compiladoresBaseListener {
         System.out.println(ctxAsignacion.getText());
 
         varAux = ctxAsignacion.VAR().getText();
-        
+
         if (ctxAsignacion.tipo_var() != null) {
             declararVariable(ctxAsignacion);
         }
@@ -133,7 +130,6 @@ public class miListener extends compiladoresBaseListener {
         AuxAsignacion(ctxAsignacion, varAux);
 
     }
-
 
     public ArrayList<String> calcularResultado(String input) {
         Expression exp = new ExpressionBuilder(input).build();
@@ -162,27 +158,28 @@ public class miListener extends compiladoresBaseListener {
         if (ctx instanceof compiladoresParser.DeclaracionContext) {
             compiladoresParser.DeclaracionContext declaracionCtx = (compiladoresParser.DeclaracionContext) ctx;
             ID.TipoDato varActual = ID.TipoDato.valueOf(declaracionCtx.tipo_var().getText().toUpperCase());
-            id = new Variable(varActual, declaracionCtx.VAR().getText(),this.TablaSimbolos.getCtxNumber());
+            id = new Variable(varActual, declaracionCtx.VAR().getText(), this.TablaSimbolos.getCtxCounter());
         } else if (ctx instanceof compiladoresParser.AsignacionContext) {
             compiladoresParser.AsignacionContext asignacionCtx = (compiladoresParser.AsignacionContext) ctx;
             ID.TipoDato varActual = ID.TipoDato.valueOf(asignacionCtx.tipo_var().getText().toUpperCase());
-            id = new Variable(varActual, asignacionCtx.VAR().getText(),this.TablaSimbolos.getCtxNumber());
+            id = new Variable(varActual, asignacionCtx.VAR().getText(), this.TablaSimbolos.getCtxCounter());
         } else if (ctx instanceof compiladoresParser.Declaracion_funcionContext) {
             compiladoresParser.Declaracion_funcionContext asignacionCtx = (compiladoresParser.Declaracion_funcionContext) ctx;
             ID.TipoDato varActual = ID.TipoDato.valueOf(asignacionCtx.tipo_var().getText().toUpperCase());
-            id = new Variable(varActual, asignacionCtx.VAR().getText(),this.TablaSimbolos.getCtxNumber());
+            id = new Variable(varActual, asignacionCtx.VAR().getText(), this.TablaSimbolos.getCtxCounter());
             id.setEsFuncion(true);
         } else if (ctx instanceof compiladoresParser.Asignacion_argumentosContext) {
             compiladoresParser.Asignacion_argumentosContext asignacionCtx = (compiladoresParser.Asignacion_argumentosContext) ctx;
             ID.TipoDato varActual = ID.TipoDato.valueOf(asignacionCtx.tipo_var().getText().toUpperCase());
-            id = new Variable(varActual, asignacionCtx.VAR().getText(),this.TablaSimbolos.getCtxNumber());
+            id = new Variable(varActual, asignacionCtx.VAR().getText(), this.TablaSimbolos.getCtxCounter());
         } else {
             System.out.println("Tipo de contexto no reconocido");
         }
 
         if (!this.TablaSimbolos.isVariableDeclared(id.getNombre())) {
             this.TablaSimbolos.addId(id);
-        } else {$.out.println("\n Error semantico ==> La variable " + id.getNombre() + " ya existe");
+        } else {
+            System.out.println("\n Error semantico ==> La variable " + id.getNombre() + " ya existe");
         }
     }
 
@@ -195,7 +192,8 @@ public class miListener extends compiladoresBaseListener {
 
             ArrayList<String> list = new ArrayList<String>();
 
-            if (ctxAsignacion.e().term().factor().BOOLEANO() == null && ctxAsignacion.e().term().factor().VAR() == null) {
+            if (ctxAsignacion.e().term().factor().BOOLEANO() == null
+                    && ctxAsignacion.e().term().factor().VAR() == null) {
                 // Es integer
                 list = calcularResultado(ctxAsignacion.e().getText());
                 tipoVarActual = ID.TipoDato.valueOf(list.get(0));
@@ -209,7 +207,8 @@ public class miListener extends compiladoresBaseListener {
                 // Es asignacion con variable
                 if (this.TablaSimbolos.isVariableDeclared(ctxAsignacion.e().term().factor().VAR().getText())) {
 
-                    Variable varDerecha = this.TablaSimbolos.getVariableDeclared(ctxAsignacion.e().term().factor().VAR().getText());
+                    Variable varDerecha = this.TablaSimbolos
+                            .getVariableDeclared(ctxAsignacion.e().term().factor().VAR().getText());
 
                     if (varTabla.getTipo() == varDerecha.getTipo()) {
 
@@ -232,7 +231,7 @@ public class miListener extends compiladoresBaseListener {
 
             if (tipoVarActual != null) {
                 if (tipoVarActual == varTabla.getTipo()) {
-                    
+
                     varTabla.setInstanciada(true);
                     this.TablaSimbolos.asignacionId(varTabla);
 
@@ -255,14 +254,14 @@ public class miListener extends compiladoresBaseListener {
     public void exitConcatenacion(ConcatenacionContext concatenacionContext) {
 
         ConcatenacionContext ctxActual = concatenacionContext;
-        
-        while(ctxActual.getParent() instanceof ConcatenacionContext){
-            ctxActual = (ConcatenacionContext)ctxActual.getParent();
+
+        while (ctxActual.getParent() instanceof ConcatenacionContext) {
+            ctxActual = (ConcatenacionContext) ctxActual.getParent();
             return;
         }
 
         System.out.println(ctxActual.getText());
-        
+
         String input = ctxActual.getText();
 
         String[] filtrar = { "int", "double", "boolean" };
@@ -295,12 +294,12 @@ public class miListener extends compiladoresBaseListener {
 
         for (int i = 0; i < variables.size(); i++) {
 
-            ID id = new Variable(tipoVar, variables.get(i),this.TablaSimbolos.getCtxNumber());
+            ID id = new Variable(tipoVar, variables.get(i), this.TablaSimbolos.getCtxCounter());
 
             String tipoValor = "";
 
             tipoValor = determinarTipoVariable(valores.get(i));
-            
+
             if (tipoValor == "VAR") {
                 if (this.TablaSimbolos.isVariableDeclared(valores.get(i))) {
 
@@ -329,7 +328,7 @@ public class miListener extends compiladoresBaseListener {
                     System.out.println("\n Error semantico ==> " + tipoValor + " diferente a " + tipoVar.name());
                     return;
                 }
-                if (tipoValor != ""){
+                if (tipoValor != "") {
                     id.setInstanciada(true);
                 }
                 this.TablaSimbolos.addId(id);
@@ -351,7 +350,7 @@ public class miListener extends compiladoresBaseListener {
             } catch (NumberFormatException e2) {
                 if (input.equalsIgnoreCase("true") || input.equalsIgnoreCase("false")) {
                     return "BOOLEAN";
-                } else if (input != "null"){
+                } else if (input != "null") {
                     return "VAR";
                 }
                 return "";
@@ -399,7 +398,8 @@ public class miListener extends compiladoresBaseListener {
         // Guardo la variable en la Tabla de Simbolos si no esta declarada
         if (this.TablaSimbolos.isVariableDeclared(idName)) {
             ID id = this.TablaSimbolos.getVariableDeclared(idName);
-            if ( (id.getTipo() == ID.TipoDato.valueOf("INT") || id.getTipo() == ID.TipoDato.valueOf("DOUBLE")) && id.getInstanciada()) {
+            if ((id.getTipo() == ID.TipoDato.valueOf("INT") || id.getTipo() == ID.TipoDato.valueOf("DOUBLE"))
+                    && id.getInstanciada()) {
                 id.setUsada(true);
                 this.TablaSimbolos.setUsedId(idName);
             } else {
@@ -422,7 +422,8 @@ public class miListener extends compiladoresBaseListener {
         // Guardo la variable en la Tabla de Simbolos si no esta declarada
         if (this.TablaSimbolos.isVariableDeclared(idName)) {
             ID id = this.TablaSimbolos.getVariableDeclared(idName);
-            if ( (id.getTipo() == ID.TipoDato.valueOf("INT") || id.getTipo() == ID.TipoDato.valueOf("DOUBLE")) && id.getInstanciada()) {
+            if ((id.getTipo() == ID.TipoDato.valueOf("INT") || id.getTipo() == ID.TipoDato.valueOf("DOUBLE"))
+                    && id.getInstanciada()) {
                 id.setUsada(true);
                 this.TablaSimbolos.setUsedId(idName);
             } else {
@@ -435,21 +436,20 @@ public class miListener extends compiladoresBaseListener {
         super.exitIncremento(ctx);
     }
 
-    
     @Override
     public void exitDeclaracion_funcion(Declaracion_funcionContext ctx) {
         // TODO Auto-generated method stub
         declararVariable(ctx);
         super.exitDeclaracion_funcion(ctx);
     }
-    
+
     @Override
     public void enterAsignacion_funcion(Asignacion_funcionContext ctx) {
         // TODO Auto-generated method stub
         this.TablaSimbolos.addContext();
         super.enterAsignacion_funcion(ctx);
     }
-    
+
     @Override
     public void exitAsignacion_funcion(Asignacion_funcionContext ctx) {
         // TODO Auto-generated method stub
@@ -457,7 +457,7 @@ public class miListener extends compiladoresBaseListener {
 
         String idName = ctx.VAR().getText();
 
-        if(this.TablaSimbolos.isVariableDeclared(idName)){
+        if (this.TablaSimbolos.isVariableDeclared(idName)) {
             ID id = this.TablaSimbolos.getVariableDeclared(idName);
             id.setInstanciada(true);
             this.TablaSimbolos.asignacionId(id);
@@ -465,22 +465,20 @@ public class miListener extends compiladoresBaseListener {
 
         super.exitAsignacion_funcion(ctx);
     }
-    
+
     @Override
     public void exitAsignacion_argumentos(Asignacion_argumentosContext ctx) {
         // TODO Auto-generated method stub
-        declararVariable(ctx);        
+        declararVariable(ctx);
         super.exitAsignacion_argumentos(ctx);
     }
-
-    
 
     @Override
     public void exitLlamado_funcion(Llamado_funcionContext ctx) {
         // TODO Auto-generated method stub
         String idName = ctx.VAR().getText();
 
-        if(this.TablaSimbolos.isVariableDeclared(idName)){
+        if (this.TablaSimbolos.isVariableDeclared(idName)) {
             ID id = this.TablaSimbolos.getVariableDeclared(idName);
             id.setUsada(true);
             this.TablaSimbolos.asignacionId(id);

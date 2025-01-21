@@ -23,13 +23,13 @@ public abstract class ID {
     }
 
 
-    public ID (TipoDato tipo, String nombre) { 
+    public ID (TipoDato tipo, String nombre, int ctx) { 
         this.tipo = tipo;
         this.nombre = nombre;
         this.usada = false;
         this.instanciada = false;
         this.esFuncion = false;
-        this.ctx = -1;
+        this.ctx = ctx;
     }
 
     public Boolean getInstanciada() {
