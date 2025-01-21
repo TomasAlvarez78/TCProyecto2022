@@ -1,9 +1,9 @@
 1. Ultimos cambios:
-    a. Se redefinio las clases ID, Variable
-        ID: Se elimino valor y agrego instanciada, esFuncion
-        Variable: Se cambio el print, indica si es VAR o FUN
-    b. Listener: Se elimino todo lo que tenga que ver con el valor de ID
-    c. Visitor: Comentados los println
+    a. Se declaro la clase Contexto, que la TablaDeSimbolos utiliza, para tener en cuenta cuales variables de que contexto usa
+    b. Listener: Se amoldo tras la agregacion de Contexto
+    c. Visitor:
+        * Se definio el tac asignacionFuncion y los llamados
+        * Se agregaron tabs
 
 2. Arreglar a futuro
     a. Esto sigue rompiendo tras los cambios de valor
@@ -16,10 +16,7 @@
     Parece ser por la regla de compiladores.g4 -> asignacion
 
 3. TODO:
-    a. Realizar el listener y visitor para function
-        Listener: Guardar como FUN en la tabla de simbolos
-        Visitor: TAC
-        
+      
     Validar caso en listener: no lanza error:
     ```
         int = 10, b - 10;

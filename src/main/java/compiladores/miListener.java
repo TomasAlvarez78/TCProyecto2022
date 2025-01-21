@@ -17,6 +17,7 @@ import compiladores.compiladoresParser.IncrementoContext;
 import compiladores.compiladoresParser.Llamado_funcionContext;
 import compiladores.compiladoresParser.Main_functionContext;
 import compiladores.compiladoresParser.ProgramaContext;
+import compiladores.compiladoresParser.Return_tipoContext;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,11 +38,13 @@ public class miListener extends compiladoresBaseListener {
     private boolean showTabla = true;
     private TablaDeSimbolos TablaSimbolos = TablaDeSimbolos.getInstance();
     private ArrayList<ID> noUsadas = new ArrayList<ID>();
+    private boolean mainFunction;
 
     @Override
     public void enterMain_function(Main_functionContext ctx) {
         // TODO Auto-generated method stub
         System.out.println("Entre en el main function");
+        mainFunction = true;
         super.enterMain_function(ctx);
     }
 
@@ -485,6 +488,29 @@ public class miListener extends compiladoresBaseListener {
         }
 
         super.exitLlamado_funcion(ctx);
+    }
+
+    
+
+    @Override
+    public void exitReturn_tipo(Return_tipoContext ctx) {
+        // TODO Auto-generated method stub
+
+        // System.out.println(ctx.getText());
+        // System.out.println(ctx.getParent());
+
+        if(!mainFunction){
+            String idName = ctx.VAR().getText();
+    
+            if (this.TablaSimbolos.isVariableDeclared(idName)) {
+                ID id = this.TablaSimbolos.getVariableDeclared(idName);
+                id.setUsada(true);
+                this.TablaSimbolos.asignacionId(id);
+            }
+        }else{
+            mainFunction = !mainFunction;
+        }
+        super.exitReturn_tipo(ctx);
     }
 
     @Override

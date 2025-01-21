@@ -144,7 +144,7 @@ asignacion_argumentos: tipo_var VAR
 llamado_funcion: VAR PA PC;
 
 return_tipo: IRETURN VAR
-           | IRETURN factor
+           | IRETURN e
            | IRETURN
            ;
 
