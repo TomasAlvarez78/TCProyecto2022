@@ -43,7 +43,6 @@ public class miListener extends compiladoresBaseListener {
     @Override
     public void enterMain_function(Main_functionContext ctx) {
         // TODO Auto-generated method stub
-        System.out.println("Entre en el main function");
         mainFunction = true;
         super.enterMain_function(ctx);
     }
@@ -87,8 +86,6 @@ public class miListener extends compiladoresBaseListener {
     @Override
     public void exitDeclaracion(compiladoresParser.DeclaracionContext declaracionInicial) {
 
-        System.out.println("Declaracion");
-
         ID.TipoDato varActual = ID.TipoDato.valueOf(declaracionInicial.tipo_var().getText().toUpperCase());
 
         declararVariable(declaracionInicial);
@@ -120,9 +117,9 @@ public class miListener extends compiladoresBaseListener {
         // Me fijo en la tabla de simbolos si la VAR de la izquierda esta declarada
         String varAux = "";
 
-        System.out.println("Asignacion");
+        // System.out.println("Asignacion");
 
-        System.out.println(ctxAsignacion.getText());
+        // System.out.println(ctxAsignacion.getText());
 
         varAux = ctxAsignacion.VAR().getText();
 
@@ -263,7 +260,7 @@ public class miListener extends compiladoresBaseListener {
             return;
         }
 
-        System.out.println(ctxActual.getText());
+        // System.out.println(ctxActual.getText());
 
         String input = ctxActual.getText();
 
@@ -292,8 +289,8 @@ public class miListener extends compiladoresBaseListener {
             valores.add(valor != null ? valor : "null");
         }
 
-        System.out.println("Variables: " + variables);
-        System.out.println("Valores: " + valores);
+        // System.out.println("Variables: " + variables);
+        // System.out.println("Valores: " + valores);
 
         for (int i = 0; i < variables.size(); i++) {
 
@@ -338,7 +335,7 @@ public class miListener extends compiladoresBaseListener {
             }
         }
 
-        System.out.println("Salida Concatenacion");
+        // System.out.println("Salida Concatenacion");
         super.exitConcatenacion(concatenacionContext);
     }
 
@@ -456,7 +453,6 @@ public class miListener extends compiladoresBaseListener {
     @Override
     public void exitAsignacion_funcion(Asignacion_funcionContext ctx) {
         // TODO Auto-generated method stub
-        System.out.println("Entre a asignacionFuncion");
 
         String idName = ctx.VAR().getText();
 

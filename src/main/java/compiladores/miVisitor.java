@@ -53,7 +53,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 
     @Override
     public String visitPrograma(ProgramaContext ctx) {
-        System.out.println("Inicio Visitor");
+        // System.out.println("Inicio Visitor");
         return super.visitPrograma(ctx);
     }
 
