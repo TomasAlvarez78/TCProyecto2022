@@ -1,6 +1,5 @@
 package compiladores.helpers;
 
-import compiladores.Clases.SharedVariable;
 import compiladores.Clases.TACLevel;
 
 import java.io.File;
@@ -8,9 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class TACHelper {
     
@@ -19,9 +16,6 @@ public class TACHelper {
 
     int tempVarsCount;
     int labelsCount;
-    int sharedCount;
-
-    Map<String,List<SharedVariable>> sharedVariables;
 
     public List<TACLevel> levels;
 
@@ -48,7 +42,6 @@ public class TACHelper {
 
         tempVarsCount = 0;
         labelsCount = 0;
-        sharedVariables = new HashMap<>();
 
         levels = new ArrayList<>();
     }
@@ -61,23 +54,8 @@ public class TACHelper {
         }
     }
 
-    public List<SharedVariable> getFunctionVariables(String function){
-        List<SharedVariable> variables = sharedVariables.get(function);
-
-        if(variables == null){
-            variables = new ArrayList<>();
-            sharedVariables.put(function, variables);
-        }
-
-        return variables;
-    }
-
     public String getNextLabel(){
         return "L" + ++labelsCount;
-    }
-
-    public String getNextSharedVariable(){
-        return "S" + ++sharedCount;
     }
 
     public String getNextTempVariable(){

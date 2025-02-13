@@ -28,19 +28,16 @@ import compiladores.compiladoresParser.Llamado_funcionContext;
 import compiladores.compiladoresParser.Main_functionContext;
 import compiladores.compiladoresParser.IncrementoContext;
 import compiladores.compiladoresParser.DecrementoContext;
-import compiladores.Clases.SharedVariable;
 import compiladores.Clases.TACLevel;
 import compiladores.helpers.TACHelper;
 
 public class miVisitor extends compiladoresBaseVisitor<String> {
 
-    List<List<SharedVariable>> variables;
     List<String> variablesCheckear;
     int tab;
     String tabText;
 
     public miVisitor() {
-        variables = new ArrayList<>();
         variablesCheckear = new ArrayList<>();
         tab = 0;
         tabText = "    ";
