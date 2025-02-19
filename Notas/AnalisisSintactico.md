@@ -76,7 +76,7 @@ acciones -> desplazar y reducir
 
 ```
 s : ( s ) s
-  |
+  |  
   ;
 ```
 
