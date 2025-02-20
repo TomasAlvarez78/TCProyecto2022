@@ -3,9 +3,6 @@ package compiladores;
 import compiladores.compiladoresParser.Asignacion_argumentosContext;
 import compiladores.compiladoresParser.Asignacion_funcionContext;
 
-// import org.antlr.v4.runtime.ParserRuleContext;
-// import org.antlr.v4.runtime.tree.TerminalNode;
-
 import compiladores.compiladoresParser.BloqueContext;
 import compiladores.compiladoresParser.ConcatenacionContext;
 import compiladores.compiladoresParser.CondContext;
@@ -57,7 +54,7 @@ public class miListener extends compiladoresBaseListener {
             if (e.term().factor().VAR() != null) {
                 if (!this.TablaSimbolos.isVariableDeclared(e.term().factor().VAR().getText())) {
                     System.out.println("Error semantico ==> La variable " + e.term().factor().VAR().getText()
-                            + " no esta declarada");
+                            + " no esta declarada - Linea: " + ctx.getStart().getLine());
                     isViable = false;
                 }
             }
@@ -102,7 +99,7 @@ public class miListener extends compiladoresBaseListener {
                     this.TablaSimbolos.addId(id);
                     // System.out.println(ctxConcat.asignacion().getText());
                 } else {
-                    System.out.println("\nError semantico ==> La variable " + id.getNombre() + " ya existe");
+                    System.out.println("\nError semantico ==> La variable " + id.getNombre() + " ya existe - Linea: " + ctxConcat.getStart().getLine());
                 }
                 ctxConcat = ctxConcat.declaracion_concat();
             } while (ctxConcat.getText() != "");
@@ -179,7 +176,7 @@ public class miListener extends compiladoresBaseListener {
         if (!this.TablaSimbolos.isVariableDeclared(id.getNombre())) {
             this.TablaSimbolos.addId(id);
         } else {
-            System.out.println("\n Error semantico ==> La variable " + id.getNombre() + " ya existe");
+            System.out.println("\n Error semantico ==> La variable " + id.getNombre() + " ya existe - Linea: " + ctx.getStart().getLine());
         }
     }
 
@@ -218,13 +215,13 @@ public class miListener extends compiladoresBaseListener {
                             this.TablaSimbolos.asignacionId(varTabla);
                             this.TablaSimbolos.asignacionId(varDerecha);
                         } else {
-                            System.out.println("\nError semantico ==> La segunda variable no esta inicializada");
+                            System.out.println("\nError semantico ==> La segunda variable no esta inicializada - Linea: " + ctxAsignacion.getStart().getLine());
                         }
                     } else {
-                        System.out.println("\nError semantico ==> La segunda variable no son del mismo tipo");
+                        System.out.println("\nError semantico ==> La segunda variable no son del mismo tipo - Linea: " + ctxAsignacion.getStart().getLine());
                     }
                 } else {
-                    System.out.println("\nError semantico ==> La segunda variable no esta declarada");
+                    System.out.println("\nError semantico ==> La segunda variable no esta declarada - Linea: " + ctxAsignacion.getStart().getLine());
                 }
                 return;
             }
@@ -236,11 +233,11 @@ public class miListener extends compiladoresBaseListener {
                     this.TablaSimbolos.asignacionId(varTabla);
 
                 } else {
-                    System.out.println("\nError semantico ==> Se intenta declarar de un tipo dferente");
+                    System.out.println("\nError semantico ==> Se intenta declarar de un tipo dferente - Linea: " + ctxAsignacion.getStart().getLine());
                 }
             }
         } else {
-            System.out.println("\nError ==> No se puede inicializar una variable no declarada");
+            System.out.println("\nError ==> No se puede inicializar una variable no declarada - Linea: " + ctxAsignacion.getStart().getLine());
         }
     }
 
@@ -315,17 +312,17 @@ public class miListener extends compiladoresBaseListener {
                             this.TablaSimbolos.asignacionId(varDerecha);
 
                         } else {
-                            System.out.println("\nError semantico ==> La segunda variable no esta inicializada");
+                            System.out.println("\nError semantico ==> La segunda variable no esta inicializada - Linea: " + ctxActual.getStart().getLine());
                         }
                     } else {
-                        System.out.println("\nError semantico ==> La segunda variable no son del mismo tipo");
+                        System.out.println("\nError semantico ==> La segunda variable no son del mismo tipo - Linea: " + ctxActual.getStart().getLine());
                     }
                 } else {
-                    System.out.println("\nError semantico ==> La segunda variable no esta declarada");
+                    System.out.println("\nError semantico ==> La segunda variable no esta declarada - Linea: " + ctxActual.getStart().getLine());
                 }
             } else {
                 if (tipoValor != tipoVar.name() && tipoValor != "") {
-                    System.out.println("\n Error semantico ==> " + tipoValor + " diferente a " + tipoVar.name());
+                    System.out.println("\n Error semantico ==> " + tipoValor + " diferente a " + tipoVar.name() + " - Linea: " + ctxActual.getStart().getLine());
                     return;
                 }
                 if (tipoValor != "") {
@@ -403,10 +400,10 @@ public class miListener extends compiladoresBaseListener {
                 id.setUsada(true);
                 this.TablaSimbolos.setUsedId(idName);
             } else {
-                System.out.println("\n Error semantico ==> La variable " + id.getNombre() + " no es del tipo correcto");
+                System.out.println("\n Error semantico ==> La variable " + id.getNombre() + " no es del tipo correcto o no esta inicializada - Linea: " + ctx.getStart().getLine());
             }
         } else {
-            System.out.println("\n Error semantico ==> La variable " + idName + " no existe");
+            System.out.println("\n Error semantico ==> La variable " + idName + " no existe - Linea: " + ctx.getStart().getLine());
         }
 
         super.exitDecremento(ctx);
@@ -422,15 +419,14 @@ public class miListener extends compiladoresBaseListener {
         // Guardo la variable en la Tabla de Simbolos si no esta declarada
         if (this.TablaSimbolos.isVariableDeclared(idName)) {
             ID id = this.TablaSimbolos.getVariableDeclared(idName);
-            if ((id.getTipo() == ID.TipoDato.valueOf("INT") || id.getTipo() == ID.TipoDato.valueOf("DOUBLE"))
-                    && id.getInstanciada()) {
+            if ((id.getTipo() == ID.TipoDato.valueOf("INT") || id.getTipo() == ID.TipoDato.valueOf("DOUBLE")) && id.getInstanciada()) {
                 id.setUsada(true);
                 this.TablaSimbolos.setUsedId(idName);
             } else {
-                System.out.println("\n Error semantico ==> La variable " + id.getNombre() + " no es del tipo correcto");
+                System.out.println("\n Error semantico ==> La variable " + id.getNombre() + " no es del tipo correcto o no esta inicializada- Linea: " + ctx.getStart().getLine());
             }
         } else {
-            System.out.println("\n Error semantico ==> La variable " + idName + " no existe");
+            System.out.println("\n Error semantico ==> La variable " + idName + " no existe - Linea: " + ctx.getStart().getLine());
         }
 
         super.exitIncremento(ctx);
@@ -475,12 +471,33 @@ public class miListener extends compiladoresBaseListener {
     @Override
     public void exitLlamado_funcion(Llamado_funcionContext ctx) {
         // TODO Auto-generated method stub
-        String idName = ctx.VAR().getText();
 
-        if (this.TablaSimbolos.isVariableDeclared(idName)) {
-            ID id = this.TablaSimbolos.getVariableDeclared(idName);
+        String varName = "";
+        String funName = "";
+
+        if(ctx.VAR(0) != null && ctx.VAR(1) != null){
+            varName = ctx.VAR(0).getText();
+            funName = ctx.VAR(1).getText();
+
+            ID idVarName = this.TablaSimbolos.getVariableDeclared(varName);
+            if(idVarName != null){
+                idVarName.setUsada(true);
+                this.TablaSimbolos.asignacionId(idVarName);
+            }else{
+                System.out.println("\n Error semantico ==> La variable " + varName + " no existe - Linea: " + ctx.getStart().getLine());
+            }
+        }else if (ctx.VAR(0) != null && ctx.VAR(1) == null){
+            funName = ctx.VAR(0).getText();
+        }
+
+
+        ID id = this.TablaSimbolos.getVariableDeclared(funName);
+
+        if (id != null && id.getEsFuncion()) {
             id.setUsada(true);
             this.TablaSimbolos.asignacionId(id);
+        }else{
+            System.out.println("\n Error ==> La variable " + id.getNombre() + " no puede ser llamada como funcion - Linea: " + ctx.getStart().getLine());
         }
 
         super.exitLlamado_funcion(ctx);
@@ -516,8 +533,9 @@ public class miListener extends compiladoresBaseListener {
 
     @Override
     public void exitPrograma(ProgramaContext ctx) {
+
         for (ID id : noUsadas) {
-            System.out.println("\nError semantico ==> La variable " + id + " no fue utilizada");
+            System.out.println("\nError semantico ==> La variable " + id + " no fue utilizada - Linea: " + ctx.getStart().getLine());
         }
 
         if (showTabla) {

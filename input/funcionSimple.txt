@@ -1,0 +1,11 @@
+int sumar(int x);
+
+int sumar(int x){
+    x = x + 1;
+    return x;
+}
+
+int main(){
+    int a = 10;
+    a = sumar(a);
+}

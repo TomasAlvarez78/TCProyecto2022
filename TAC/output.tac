@@ -1,16 +1,9 @@
-function resta:
-param y
-    a = 1
-    return y
-end resta
-function sumar:
-param x
-    a = 1
-    call resta
-    return x
-end sumar
 function main:
-    a = 1
-    call sumar
-    return a
+    i = 1
+    L1:
+    i = 2
+    if T0 == false goto L2
+        i = i + 1
+    goto L1
+    L2:
 end main

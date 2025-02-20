@@ -141,7 +141,15 @@ asignacion_argumentos: tipo_var VAR
                     ;
                                      
 
-llamado_funcion: VAR PA PC;
+llamado_funcion: VAR IGU VAR PA concatenacion_argumentos PC
+                | VAR PA concatenacion_argumentos PC;
+
+concatenacion_argumentos: VAR
+                        | e 
+                        | VAR COM concatenacion_argumentos
+                        | e COM concatenacion_argumentos
+                        | 
+                        ;
 
 return_tipo: IRETURN VAR
            | IRETURN e

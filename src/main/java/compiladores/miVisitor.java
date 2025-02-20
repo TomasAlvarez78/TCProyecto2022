@@ -2,6 +2,9 @@ package compiladores;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -14,6 +17,7 @@ import compiladores.compiladoresParser.Bucle_forContext;
 import compiladores.compiladoresParser.Bucle_whileContext;
 import compiladores.compiladoresParser.ComparadoresContext;
 import compiladores.compiladoresParser.ConcatenacionContext;
+import compiladores.compiladoresParser.Concatenacion_argumentosContext;
 import compiladores.compiladoresParser.CondContext;
 import compiladores.compiladoresParser.Condicional_ifContext;
 import compiladores.compiladoresParser.EContext;
@@ -28,6 +32,7 @@ import compiladores.compiladoresParser.Llamado_funcionContext;
 import compiladores.compiladoresParser.Main_functionContext;
 import compiladores.compiladoresParser.IncrementoContext;
 import compiladores.compiladoresParser.DecrementoContext;
+import compiladores.Clases.ID;
 import compiladores.Clases.TACLevel;
 import compiladores.helpers.TACHelper;
 
@@ -36,11 +41,13 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     List<String> variablesCheckear;
     int tab;
     String tabText;
+    String idActual;
 
     public miVisitor() {
         variablesCheckear = new ArrayList<>();
         tab = 0;
         tabText = "    ";
+        idActual = "";
     }
 
     @Override
@@ -50,7 +57,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 
     @Override
     public String visitPrograma(ProgramaContext ctx) {
-        // System.out.println("Inicio Visitor");
+        
         return super.visitPrograma(ctx);
     }
 
@@ -61,42 +68,42 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         return "";
     }
 
-    // Solo asignaciones, declaraciones no se indican en el TAC
+    
     @Override
     public String visitAsignacion(AsignacionContext ctx) {
 
-        String id = ctx.VAR().getText();
+        idActual = ctx.VAR().getText();
 
         TACLevel currentLevel = TACHelper.getInstance().addLevel();
 
         visit(ctx.e());
 
-        if (currentLevel.getFactors().size() > 1) {
-            auxTemporal(ctx);
-        } else {
+        
+        
+        
 
-            TACHelper.getInstance().writeTAC(tabText.repeat(tab) + id + " = " + currentLevel.getFactors().get(0));
-            TACHelper.getInstance().removeLastLevel();
-        }
+        
+        
+        
         return "";
     }
 
     @Override
     public String visitConcatenacion(ConcatenacionContext ctx) {
-        // TODO Auto-generated method stub
+        
 
-        String id = ctx.VAR().getText();
+        idActual = ctx.VAR().getText();
 
-        TACLevel currentLevel = TACHelper.getInstance().addLevel();
+        
 
         visit(ctx.e());
 
-        if (currentLevel.getFactors().size() > 1) {
-            auxTemporal(ctx);
-        } else {
-            TACHelper.getInstance().writeTAC(tabText.repeat(tab) + id + " = " + currentLevel.getFactors().get(0));
-            TACHelper.getInstance().removeLastLevel();
-        }
+        
+        
+        
+        
+        
+        
 
         if (ctx.concatenacion() != null) {
             visit(ctx.concatenacion());
@@ -132,7 +139,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
             TACHelper.getInstance().getLastLevel().getSigns().add(ctx.getChild(0).getText());
         }
         return visitAllChildren(ctx);
-        // return super.visitExp(ctx);
+        
     }
 
     @Override
@@ -166,13 +173,15 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
             TACHelper.getInstance().getLastLevel().getFactors().add(ctx.getText());
             variablesCheckear.add(ctx.getText());
         }
-        // return visitAllChildren(ctx);
+        
         return "";
     }
 
     @Override
     public String visitCond(CondContext ctx) {
-        auxTemporal(ctx);
+        // auxTemporal(ctx);
+
+
         return "";
     }
 
@@ -201,7 +210,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 
     @Override
     public String visitIncremento(IncrementoContext ctx) {
-        // TODO Auto-generated method stub
+        
 
         String id = ctx.VAR().getText();
 
@@ -216,7 +225,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 
     @Override
     public String visitDecremento(DecrementoContext ctx) {
-        // TODO Auto-generated method stub
+        
 
         String id = ctx.VAR().getText();
 
@@ -231,7 +240,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 
     @Override
     public String visitBucle_for(Bucle_forContext ctx) {
-        // TODO Auto-generated method stub
+        
 
         String forLabel = TACHelper.getInstance().getNextLabel();
         String outLabel = TACHelper.getInstance().getNextLabel();
@@ -264,13 +273,10 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 
     @Override
     public String visitBucle_while(Bucle_whileContext ctx) {
-        // TODO Auto-generated method stub
-        // return super.visitBucle_while(ctx);
-
+        
         String forLabel = TACHelper.getInstance().getNextLabel();
         String outLabel = TACHelper.getInstance().getNextLabel();
 
-        TACHelper.getInstance().writeTAC(tabText.repeat(tab) + "goto " + forLabel);
         TACHelper.getInstance().writeTAC(tabText.repeat(tab) + forLabel + ":");
 
         visit(ctx.cond());
@@ -289,39 +295,86 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 
     public void auxTemporal(RuleContext ctx) {
 
-        if (ctx.getChild(0).getChildCount() > 0) {
+        List<String> tac = generateTAC(ctx.getText());
 
-            TACLevel currentLevel = TACHelper.getInstance().addLevel();
+        for (int i = 0; i < tac.size(); i++) {
+            System.out.println(tac.get(i));
+            TACHelper.getInstance().writeTAC( tabText.repeat(tab) + tac.get(i));
+        }
+        
+    }
 
-            visitAllChildren(ctx);
-
-            while (currentLevel.getFactors().size() > 1) {
-
-                String tmp = TACHelper.getInstance().getNextTempVariable();
-                TACHelper.getInstance().writeTAC(tabText.repeat(tab) + tmp + " = " + currentLevel.getFactors().get(0) + " "
-                        + currentLevel.getSigns().get(0) + " " + currentLevel.getFactors().get(1));
-
-                currentLevel.getFactors().remove(1);
-                currentLevel.getFactors().remove(0);
-                currentLevel.getSigns().remove(0);
-                currentLevel.getFactors().add(0, tmp);
-
+    public List<String> generateTAC(String expression) {
+        List<String> tac = new ArrayList<>();
+        Stack<String> values = new Stack<>();
+        Stack<String> operators = new Stack<>();
+        int tempIndex = 1;
+    
+        Pattern pattern = Pattern.compile("(\\d+|[a-zA-Z_][a-zA-Z0-9_]*|[+\\-*/()])");
+        Matcher matcher = pattern.matcher(expression);
+    
+        while (matcher.find()) {
+            String token = matcher.group();
+    
+            if (token.matches("\\d+|[a-zA-Z_][a-zA-Z0-9_]*")) { 
+                values.push(token); 
+            } else if (token.equals("(")) {
+                operators.push(token); 
+            } else if (token.equals(")")) {
+                
+                while (!operators.isEmpty() && !operators.peek().equals("(")) {
+                    generateTempCode(values, operators.pop(), tac, tempIndex++);
+                }
+                operators.pop(); 
+    
+            } else if (isOperator(token)) {
+                
+                while (!operators.isEmpty() && precedence(operators.peek()) >= precedence(token)) {
+                    generateTempCode(values, operators.pop(), tac, tempIndex++);
+                }
+                operators.push(token);
             }
-
-            String levelResult = currentLevel.getFactors().get(0);
-            TACHelper.getInstance().removeLastLevel();
-            TACLevel nextLevel = TACHelper.getInstance().getLastLevel();
-            if (nextLevel != null) {
-                nextLevel.getFactors().add(levelResult);
-            }
-        } else {
-            visitAllChildren(ctx);
+        }
+    
+        while (!operators.isEmpty()) {
+            generateTempCode(values, operators.pop(), tac, tempIndex++);
+        }
+        tac.add(this.idActual + " = " + values.pop());
+        return tac;
+    }
+    
+    
+    private void generateTempCode(Stack<String> values, String operator, List<String> tac, int tempIndex) {
+        String right = values.pop();
+        String left = values.pop();
+        String tempVar = "T" + tempIndex;
+        
+        tac.add(tempVar + " = " + left + " " + operator + " " + right);
+        values.push(tempVar);
+    }
+    
+    
+    private boolean isOperator(String token) {
+        return "+-*/".contains(token);
+    }
+    
+    
+    private int precedence(String operator) {
+        switch (operator) {
+            case "*":
+            case "/":
+                return 2;  
+            case "+":
+            case "-":
+                return 1;  
+            default:
+                return 0;
         }
     }
 
     @Override
     public String visitAsignacion_funcion(Asignacion_funcionContext ctx) {
-        // TODO Auto-generated method stub
+        
 
         String funLabel = ctx.VAR().getText();
 
@@ -340,15 +393,18 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 
     @Override
     public String visitAsignacion_argumentos(Asignacion_argumentosContext ctx) {
-        // TODO Auto-generated method stub
+        
         TACHelper.getInstance().writeTAC(tabText.repeat(tab) + "param " + ctx.VAR());
+        if (ctx.asignacion_argumentos() != null) {
+            visit(ctx.asignacion_argumentos());
+        }
 
         return "";
     }
 
     @Override
     public String visitReturn_tipo(Return_tipoContext ctx) {
-        // TODO Auto-generated method stub
+        
 
         
         if(ctx.VAR() != null){
@@ -367,16 +423,38 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     
     @Override
     public String visitLlamado_funcion(Llamado_funcionContext ctx) {
-        // TODO Auto-generated method stub
+                
+        if (ctx.concatenacion_argumentos() != null) {
+            visit(ctx.concatenacion_argumentos());
+        }
         
-        TACHelper.getInstance().writeTAC(tabText.repeat(tab) + "call " + ctx.VAR());
-        
+        if(ctx.VAR(0) != null && ctx.VAR(1) != null){
+            TACHelper.getInstance().writeTAC(tabText.repeat(tab) + ctx.VAR(0) + " = call " + ctx.VAR(1));
+        }else if (ctx.VAR(0) != null && ctx.VAR(1) == null){
+            TACHelper.getInstance().writeTAC(tabText.repeat(tab) + "call " + ctx.VAR(0));
+        }
+        return "";
+    }
+
+    
+
+    @Override
+    public String visitConcatenacion_argumentos(Concatenacion_argumentosContext ctx) {
+
+        if( ctx.VAR() != null ){
+            TACHelper.getInstance().writeTAC(tabText.repeat(tab) + "param " + ctx.VAR());
+            if (ctx.concatenacion_argumentos() != null) {
+                visit(ctx.concatenacion_argumentos());
+            }
+        }
+
+
         return "";
     }
 
     @Override
     public String visitMain_function(Main_functionContext ctx) {
-        // TODO Auto-generated method stub
+        
 
         String funLabel = ctx.IMAIN().getText();
 

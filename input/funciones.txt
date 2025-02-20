@@ -1,0 +1,18 @@
+int sumar(int x);
+int resta(int y);
+
+int resta(int y){
+    y = y + 2 / 3;
+    return y;
+}
+
+int sumar(int x){
+    x++;
+    return x;
+}
+
+int main(){
+    int a = 1;
+    sumar();
+    return a;
+}
