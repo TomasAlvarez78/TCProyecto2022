@@ -13,14 +13,14 @@
 
     * getLine - DONE
 
-    * hacer igual el while con el if
+    * hacer igual el while con el if - DONE
     if - cambiar 
     while - usar
 
-    * if ( (a > 2) && (a < 4) )
-        no funciona bien, necesita si o si parentesis
+    * if ( a > 2 && a < 4 ) - Funciona
+    * if ( (a > 2) && (a < 4) ) - No Funciona
 
-    * a = sumar(a,b);
+    * a = sumar(a,b); - DONE
 
 2. Arreglar a futuro
     

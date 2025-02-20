@@ -179,8 +179,8 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
 
     @Override
     public String visitCond(CondContext ctx) {
-        // auxTemporal(ctx);
-
+    
+        auxTemporal(ctx);
 
         return "";
     }
@@ -191,18 +191,20 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         String firstLabel = TACHelper.getInstance().getNextLabel();
         String secondLabel = TACHelper.getInstance().getNextLabel();
 
+        TACHelper.getInstance().writeTAC(tabText.repeat(tab) + firstLabel + ":");
+
         visit(ctx.cond());
 
         TACHelper.getInstance()
-                .writeTAC(tabText.repeat(tab) + "if " + TACHelper.getInstance().getCurrentTempVariable() + " goto " + firstLabel);
-        if (ctx.condicional_else().bloque() != null) {
-            visit(ctx.condicional_else().bloque());
-        } else if (ctx.condicional_else().condicional_if() != null) {
+                .writeTAC(tabText.repeat(tab) + "if " + TACHelper.getInstance().getCurrentTempVariable() + " == false goto " + secondLabel);
+
+        if (ctx.condicional_else().condicional_if() != null) {
             visit(ctx.condicional_else().condicional_if());
-        }
-        TACHelper.getInstance().writeTAC(tabText.repeat(tab) + "goto " + secondLabel);
-        TACHelper.getInstance().writeTAC(tabText.repeat(tab) + firstLabel + ":");
+        } else if (ctx.condicional_else().bloque() != null) {
+            visit(ctx.condicional_else().bloque());
+        } 
         visit(ctx.bloque());
+        TACHelper.getInstance().writeTAC(tabText.repeat(tab) + "goto " + firstLabel);
         TACHelper.getInstance().writeTAC(tabText.repeat(tab) + secondLabel + ":");
 
         return "";
@@ -278,8 +280,9 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         String outLabel = TACHelper.getInstance().getNextLabel();
 
         TACHelper.getInstance().writeTAC(tabText.repeat(tab) + forLabel + ":");
-
+        
         visit(ctx.cond());
+
 
         TACHelper.getInstance()
                 .writeTAC(tabText.repeat(tab) + "if " + TACHelper.getInstance().getCurrentTempVariable() + " == false goto " + outLabel);
@@ -310,7 +313,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
         Stack<String> operators = new Stack<>();
         int tempIndex = 1;
     
-        Pattern pattern = Pattern.compile("(\\d+|[a-zA-Z_][a-zA-Z0-9_]*|[+\\-*/()])");
+        Pattern pattern = Pattern.compile("(\\d+|[a-zA-Z_][a-zA-Z0-9_]*|[+\\-*/()=!<>|&]+)");
         Matcher matcher = pattern.matcher(expression);
     
         while (matcher.find()) {
@@ -347,7 +350,7 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     private void generateTempCode(Stack<String> values, String operator, List<String> tac, int tempIndex) {
         String right = values.pop();
         String left = values.pop();
-        String tempVar = "T" + tempIndex;
+        String tempVar = TACHelper.getInstance().getNextTempVariable();
         
         tac.add(tempVar + " = " + left + " " + operator + " " + right);
         values.push(tempVar);
@@ -355,20 +358,28 @@ public class miVisitor extends compiladoresBaseVisitor<String> {
     
     
     private boolean isOperator(String token) {
-        return "+-*/".contains(token);
+        return "+-*/=!<>|&".contains(token) || token.matches("==|!=|<=|>=|&&|\\|\\|");
     }
     
     
     private int precedence(String operator) {
         switch (operator) {
-            case "*":
-            case "/":
-                return 2;  
-            case "+":
-            case "-":
-                return 1;  
-            default:
+            case "!":
+                return 4;
+            case "*": case "/":
+                return 3;
+            case "+": case "-":
+                return 2;
+            case "<": case ">": case "<=": case ">=":
+                return 1;
+            case "==": case "!=":
                 return 0;
+            case "&&":
+                return -1;
+            case "||":
+                return -2;
+            default:
+                return -3;
         }
     }
 
